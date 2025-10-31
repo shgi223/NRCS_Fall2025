@@ -11,7 +11,7 @@ data1 <- data1[,1:16] # we don't need the columns beyond 16
 #View(data1)
 
 # make visitID column since we will pseudoreplicate point x visit
-data1$survey <- paste0(data1$full_point_id, "_v", data1$visit)
+data1$survey <- paste0(data1$full_point_id, "_v", data1$visit, "_y", data1$year)
 
 # make an ordinal date column
 data1$date <- make_date(year = data1$year, month = data1$month, day = data1$day)
@@ -46,12 +46,17 @@ data1$mssr <- as.numeric(difftime(survey_posix, sunrise_posix, units = "mins"))
 ################################
 
 flowers1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_9.12.2025.xlsx", sheet = "flowers")
-
 flowers1 <- as.data.frame(flowers1)
+flowers1 <- flowers1[,1:13]
 head(flowers1)
-flowers1$survey_id <- paste0(flowers1$full_point_id, "_v", flowers1$visit)
+
+# make visitID column since we will pseudoreplicate point x visit
+flowers1$survey_id <- paste0(flowers1$full_point_id, "_v", flowers1$visit, "_y", flowers1$year)
+
 flowerdens <- data.frame("survey_id" = 0, "NoFlowers" = 0)
 
+# for() loop that adds up all the flowers of each type for each survey and
+# calculates a single "# flowers" (flower dens) for each survey
 for(i in 1:length(unique(flowers1$survey_id))){
   survey_i <- unique(flowers1$survey_id)[i]
   survey_i_data <- subset(flowers1, survey_id == survey_i)
@@ -59,22 +64,27 @@ for(i in 1:length(unique(flowers1$survey_id))){
   newrow <- data.frame("survey_id" = survey_i, "NoFlowers" = NoFlowers_i)
   flowerdens <- rbind(flowerdens, newrow)
 }
+
 flowerdens <- flowerdens[2:nrow(flowerdens),]
 rownames(flowerdens) <- 1:nrow(flowerdens)
 
 # Veg
 ################################
 
-veg1 <- readxl::read_xlsx("C:/Users/new user/Desktop/UPDATED/2024_CEAP_Pollinators_DataEntry_MASTER_9.12.2025.xlsx",
-                          sheet = "veg")
-
+veg1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_9.12.2025.xlsx", sheet = "veg")
 veg1 <- as.data.frame(veg1)
-veg1 <- veg1[,c(3,5,6,30:44)]
+veg1 <- veg1[,c(3,5,6,10,30:44)]
+veg1[,5:19] <- round(veg1[,5:19], 0) # round values
+
+# make visitID column since we will pseudoreplicate point x visit
+veg1$survey_id <- paste0(veg1$full_point_id, "_y", veg1$year)
+
 head(veg1)
 
 ###############################
 # visualizing distances
-# note - butterflies and bees are separated at this point
+# note - butterflies and bees are separated for doing this...
+# but first let's clean up the distances and round them to 2 decimals
 unique(data1$distance) # all unique distances
 data1$distance[data1$distance == "NA"] <- NA # turn text NAs to real NAs
 data1$distance <- as.numeric(data1$distance) #convert to numeric
@@ -101,7 +111,8 @@ hist(smallest_values, main = "Closest 90% of Butterfly Records", xlab = "Butterf
 
 # establishing the list of surveys
 surveys <- unique(data1$survey)
-df1 <- data.frame("survey" = 0,
+df1 <- data.frame("year" = 0,
+                  "survey" = 0,
                   "practice" = 0,
                   "treated" = 0,
                   "flowers" = 0,
@@ -134,7 +145,7 @@ df1 <- data.frame("survey" = 0,
 head(data1)
 head(bees1)
 
-for(i in 1:length(surveys)){
+for(i in 1:length(surveys)){ # for each survey...
   #i = 101
   survi <- surveys[i]
   datai <- subset(data1, survey == survi) # for metadata
@@ -148,6 +159,7 @@ for(i in 1:length(surveys)){
   cloudi <- datai$cloud[1]
   ordinali <- datai$ordinal[1]
   mssri <- datai$mssr[1]
+  yeari <- datai$year[1]
   
   # flowers
   flowers_i <- subset(flowerdens, survey_id == survi)[2]
@@ -156,6 +168,7 @@ for(i in 1:length(surveys)){
   # veg
   sitei <- substr(survi, 1, 10)
   vegi <- subset(veg1, full_point_id == sitei)
+  vegi <- subset(vegi, year == yeari) # subset for proper year
   
   # note - using "beesi" instead of "datai"
   dist1i = nrow(subset(beesi, distance > -0.01 & distance < 1))
@@ -163,7 +176,8 @@ for(i in 1:length(surveys)){
   dist3i = nrow(subset(beesi, distance > 1.99 & distance < 3))
   dist4i = nrow(subset(beesi, distance > 2.99 & distance < 4))
   dist5i = nrow(subset(beesi, distance > 3.99 & distance < 5))
-  newrow <- data.frame("survey" = survi,
+  newrow <- data.frame("year" = yeari,
+                       "survey" = survi,
                        "practice" = practi,
                        "treated" = treatedi,
                        "flowers" = flowers_i,
@@ -191,16 +205,21 @@ for(i in 1:length(surveys)){
                        "perc_anyshrub" = vegi$perc_anyshrub, 
                        "perc_anywoody" = vegi$perc_anywoody, 
                        "perc_anygrass" = vegi$perc_anygrass)
+  newrow
   df1 <- rbind(df1, newrow)
+  print(paste0("Survey ", i, " (", newrow$survey, ")", " is done! It had ", 
+               rowSums(newrow[,13:17]), " bees 🐝 and ", newrow$flowers, " flowers 🌼"))
+  Sys.sleep(0.05)
 }
+
 df1 <- df1[2:nrow(df1),]
 rownames(df1) <- 1:nrow(df1)
 
 # plot
-sums <- colSums(df1[,12:16])
-barplot(sums, names.arg = names(df1[,12:16]), xlab = "Distance", ylab = "# Observations", main = "Bee data")
+sums <- colSums(df1[,13:17])
+barplot(sums, names.arg = names(df1[,13:17]), xlab = "Distance", ylab = "# Observations", main = "Bee data")
 abline(h=0)
-write.csv(df1, "C:/Users/new user/Desktop/NRCS Pollinators/analyses/bees2024-25.csv", row.names = F)
+write.csv(df1, "~/bees2024-25.csv", row.names = F)
 
 # formatting distances -- Butterflies next
 ################################
