@@ -2,26 +2,27 @@ library(unmarked); library(AICcmodavg)
 
 # read in data and create unmarked frame
 ################################################################################
-bees1 <- read.csv("C:/Users/new user/Desktop/NRCS Pollinators/analyses/bees2024-25.csv")
-nrow(bees1)
-head(bees1)
-unique(bees1$conservation_practice)
-bees1 <- subset(bees1, conservation_practice != "not_enrolled_in_NRCS")
-nrow(bees1)
+bees1 <- read.csv("C:/Users/new user/Desktop/NRCS Pollinators/analyses/bees2024-25.csv") ##is this actually reading in df1 from data cleaning??
+bees2 <- read.csv("C:/Users/new user/Desktop/Updated/bees2024-2025.csv")
+nrow(bees2)
+head(bees2)
+unique(bees2$practice)
+bees2 <- subset(bees2, practice != "not_enrolled_in_NRCS")
+nrow(bees2)
 
 # missing flower values with mean
 ################################################################################
-bees1$flowers[is.na(bees1$flowers)] <- mean(bees1$flowers, na.rm = TRUE)
+bees2$flowers[is.na(bees2$flowers)] <- mean(bees2$flowers, na.rm = TRUE)
 
 # prep data for unmarked frame
 ################################################################################
-bee.obs <- as.matrix(bees1[,12:16]) # detection data 
+bee.obs <- as.matrix(bees2[,12:16]) # detection data 
 
 breaks <- c(0,1,2,3,4,5) # this needs to be length = J + 1 (J= no. of distance classes)
 
 ###### Stuff skylar is adding in to try and figure this out but is not part of code
-length(bees1$conservation_practice)
-length(bees1$treatment_status)
+length(bees2$practice)
+length(bees2$treated)
 length(flowerdens$NoFlowers)
 length(flowerdens$survey_id)
 #######
@@ -29,35 +30,35 @@ length(flowerdens$survey_id)
 # site covariates
 sitecovs1 <- data.frame(
   ######################## site covariates
-  "practice" = as.factor(bees1$conservation_practice),
-  "treated" = as.factor(bees1$treatment_status),
-  "flowers" = as.numeric(bees1$flowers),
+  "practice" = as.factor(bees2$practice),
+  "treated" = as.factor(bees2$treated),
+  "flowers" = as.numeric(bees2$flowers),
   
   # veg
-  "canopy" = as.numeric(bees1$perc_canopy),
-  "tallsap" = as.numeric(bees1$perc_tallsap),
-  "shortsap" = as.numeric(bees1$perc_shortsap),
-  "tallshrub" = as.numeric(bees1$perc_tallshrub),
-  "shortshrub" = as.numeric(bees1$perc_shortshrub),      
-  "forb" = as.numeric(bees1$perc_forb),
-  "tallgrass" = as.numeric(bees1$perc_tallgrass),
-  "shortgrass" = as.numeric(bees1$perc_shortgrass),
-  "CWD" = as.numeric(bees1$perc_CWD),
-  "litter" = as.numeric(bees1$perc_litter),
-  "bare" = as.numeric(bees1$perc_bare),
-  "sap" = as.numeric(bees1$perc_anysap),
-  "shrub" = as.numeric(bees1$perc_anyshrub),
-  "woody" = as.numeric(bees1$perc_anywoody),
-  "grass" = as.numeric(bees1$perc_anygrass),
+  "canopy" = as.numeric(bees2$perc_canopy),
+  "tallsap" = as.numeric(bees2$perc_tallsap),
+  "shortsap" = as.numeric(bees2$perc_shortsap),
+  "tallshrub" = as.numeric(bees2$perc_tallshrub),
+  "shortshrub" = as.numeric(bees2$perc_shortshrub),      
+  "forb" = as.numeric(bees2$perc_forb),
+  "tallgrass" = as.numeric(bees2$perc_tallgrass),
+  "shortgrass" = as.numeric(bees2$perc_shortgrass),
+  "CWD" = as.numeric(bees2$perc_CWD),
+  "litter" = as.numeric(bees2$perc_litter),
+  "bare" = as.numeric(bees2$perc_bare),
+  "sap" = as.numeric(bees2$perc_anysap),
+  "shrub" = as.numeric(bees2$perc_anyshrub),
+  "woody" = as.numeric(bees2$perc_anywoody),
+  "grass" = as.numeric(bees2$perc_anygrass),
   
   ######################## survey covariates
-  "visit" = as.numeric(bees1$visit),
-  "temp" = bees1$temp,
-  "observer" = as.factor(bees1$observer),
-  "wind" = bees1$wind,
-  "cloud" = bees1$cloud,
-  "ordinal" = bees1$ordinal,
-  "mssr" = bees1$mssr)
+  "visit" = as.numeric(bees2$visit),
+  "temp" = bees2$temp,
+  "observer" = as.factor(bees2$observer),
+  "wind" = bees2$wind,
+  "cloud" = bees2$cloud,
+  "ordinal" = bees2$ordinal,
+  "mssr" = bees2$mssr)
 
 # creating unmarked frame
 
@@ -71,7 +72,12 @@ umf1 <- unmarkedFrameGDS(y = bee.obs,
                          yearlySiteCovs = sitecovs1)
 
 summary(umf1)
-summary(siteCovs(umf1)) #Something is weird here, only 846 observations that all say observer = SG???
+summary(siteCovs(umf1)) ##why does RR only have 14 and Other (presumably MC and JA) only has 19???
+unique(bees2$observer)
+
+
+######Make sure everything above is correct !!!
+
 
 mod0.exp <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
                       keyfun = "exp", output = "density", unitsOut = "ha",
@@ -80,9 +86,6 @@ mod0.exp <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
 mod0.haz <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
                       keyfun = "haz", output = "density", unitsOut = "ha",
                       mixture = "P", K = 100, se = TRUE, data = umf1)
-
-
-####First error begins below... #####
 
 mod0.hn <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
                      keyfun = "halfnorm", output = "density", unitsOut = "ha",

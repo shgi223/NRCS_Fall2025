@@ -201,7 +201,7 @@ rownames(df1) <- 1:nrow(df1)
 sums <- colSums(df1[,12:16])
 barplot(sums, names.arg = names(df1[,12:16]), xlab = "Distance", ylab = "# Observations", main = "Bee data")
 abline(h=0)
-write.csv(df1, "C:/Users/new user/Desktop/NRCS Pollinators/analyses/bees2024-25.csv", row.names = F)
+write.csv(df1, "C:/Users/new user/Desktop/Updated/bees2024-2025.csv", row.names = F)
 
 # formatting distances -- Butterflies next
 ################################
