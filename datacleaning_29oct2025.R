@@ -136,7 +136,7 @@ head(data1)
 head(bees1)
 
 for(i in 1:length(surveys)){
-  #i = 101 ## I do not recall why we use i= 101 here or why we put hashtag in front until we run it...
+  #i = 101
   survi <- surveys[i]
   datai <- subset(data1, survey == survi) # for metadata
   beesi <- subset(bees1, survey == survi) # for bee data
@@ -309,3 +309,4 @@ barplot(sums, names.arg = names(df2[,12:16]), xlab = "Distance", ylab = "# Obser
 abline(h=0)
 
 write.csv(df2, "C:/Users/new user/Desktop/NRCS Pollinators/analyses/butts2024-25.csv", row.names = F)
+

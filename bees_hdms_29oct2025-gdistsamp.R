@@ -19,9 +19,13 @@ bee.obs <- as.matrix(bees1[,12:16]) # detection data
 
 breaks <- c(0,1,2,3,4,5) # this needs to be length = J + 1 (J= no. of distance classes)
 
+###### Stuff skylar is adding in to try and figure this out but is not part of code
 length(bees1$conservation_practice)
 length(bees1$treatment_status)
-length(bees1$)
+length(flowerdens$NoFlowers)
+length(flowerdens$survey_id)
+#######
+
 # site covariates
 sitecovs1 <- data.frame(
   ######################## site covariates
