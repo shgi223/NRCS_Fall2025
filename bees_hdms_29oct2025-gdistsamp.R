@@ -2,8 +2,8 @@ library(unmarked); library(AICcmodavg)
 
 # read in data and create unmarked frame
 ################################################################################
-bees1 <- read.csv("C:/Users/new user/Desktop/NRCS Pollinators/analyses/bees2024-25.csv") ##is this actually reading in df1 from data cleaning??
-bees2 <- read.csv("C:/Users/new user/Desktop/Updated/bees2024-2025.csv")
+bees2 <- read.csv("~/bees2024-25.csv") 
+
 nrow(bees2)
 head(bees2)
 unique(bees2$practice)
@@ -72,7 +72,7 @@ umf1 <- unmarkedFrameGDS(y = bee.obs,
                          yearlySiteCovs = sitecovs1)
 
 summary(umf1)
-summary(siteCovs(umf1)) ##why does RR only have 14 and Other (presumably MC and JA) only has 19???
+summary(siteCovs(umf1)) 
 unique(bees2$observer)
 
 
