@@ -326,5 +326,5 @@ sums <- colSums(df2[,12:16])
 barplot(sums, names.arg = names(df2[,12:16]), xlab = "Distance", ylab = "# Observations", main = "Bufferfly Data")
 abline(h=0)
 
-write.csv(df2, "C:/Users/new user/Desktop/NRCS Pollinators/analyses/butts2024-25.csv", row.names = F)
+write.csv(df2, "~/butts2024-25.csv", row.names = F)
 
