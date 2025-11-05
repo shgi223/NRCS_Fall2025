@@ -2,7 +2,7 @@ library(unmarked); library(AICcmodavg)
 
 # read in data and create unmarked frame
 ################################################################################
-butts1 <- read.csv("C:/Users/new user/Desktop/NRCS Pollinators/analyses/butts2024-25.csv")
+butts1 <- read.csv("~/butts2024-25.csv")
 nrow(butts1)
 butts1 <- subset(butts1, practice != "not_enrolled_in_NRCS")
 nrow(butts1)
