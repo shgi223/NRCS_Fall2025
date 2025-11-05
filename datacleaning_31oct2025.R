@@ -316,10 +316,15 @@ for(i in 1:length(surveys)){
                        "perc_anyshrub" = vegi$perc_anyshrub, 
                        "perc_anywoody" = vegi$perc_anywoody, 
                        "perc_anygrass" = vegi$perc_anygrass)
+  newrow
   df2 <- rbind(df2, newrow)
+  print(paste0("Survey", i, " (", newrow$survey, ")", "is done! It had ",
+               rowSums(newrow[,13:17]), " butterflies 🦋 and ", newrow$flowers, " flowers 🌼"))
 }
+
 df2 <- df2[2:nrow(df2),]
 rownames(df2) <- 1:nrow(df2)
+
 
 # plot
 sums <- colSums(df2[,12:16])
