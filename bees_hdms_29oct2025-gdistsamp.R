@@ -8,6 +8,7 @@ nrow(bees2)
 head(bees2)
 unique(bees2$practice)
 bees2 <- subset(bees2, practice != "not_enrolled_in_NRCS")
+bees2 <- subset(bees2, survey != "mo_priv022_v2_y2025") # Remove MO_022_02
 nrow(bees2)
 
 # missing flower values with mean
@@ -25,6 +26,10 @@ length(bees2$practice)
 length(bees2$treated)
 #length(flowerdens$NoFlowers)
 #length(flowerdens$survey_id)
+
+unique(bees2$observer)
+
+
 #######
 
 # site covariates
@@ -73,7 +78,7 @@ umf1 <- unmarkedFrameGDS(y = bee.obs,
 
 summary(umf1)
 summary(siteCovs(umf1)) 
-unique(bees2$observer)
+
 
 ######Make sure everything above is correct !!!
 
