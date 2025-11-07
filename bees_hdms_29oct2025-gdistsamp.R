@@ -155,7 +155,7 @@ detmodlist <- list(p_null = p_null,
                    p_ord = p_ord, 
                    p_temp = p_temp, 
                    p_cloud = p_cloud, 
-                   p_wind = p_wind, ###object "p_wind" not found???
+                   p_wind = p_wind, 
                    p_visit = p_visit)
 aictab(detmodlist)
 
