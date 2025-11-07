@@ -16,15 +16,15 @@ bees2$flowers[is.na(bees2$flowers)] <- mean(bees2$flowers, na.rm = TRUE)
 
 # prep data for unmarked frame
 ################################################################################
-bee.obs <- as.matrix(bees2[,12:16]) # detection data 
+bee.obs <- as.matrix(bees2[,c("dist1", "dist2", "dist3", "dist4", "dist5")]) # detection data 
 
 breaks <- c(0,1,2,3,4,5) # this needs to be length = J + 1 (J= no. of distance classes)
 
 ###### Stuff skylar is adding in to try and figure this out but is not part of code
 length(bees2$practice)
 length(bees2$treated)
-length(flowerdens$NoFlowers)
-length(flowerdens$survey_id)
+#length(flowerdens$NoFlowers)
+#length(flowerdens$survey_id)
 #######
 
 # site covariates
@@ -75,71 +75,78 @@ summary(umf1)
 summary(siteCovs(umf1)) 
 unique(bees2$observer)
 
-
 ######Make sure everything above is correct !!!
 
-
-mod0.exp <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+mod0.p.exp <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
                       keyfun = "exp", output = "density", unitsOut = "ha",
                       mixture = "P", K = 100, se = TRUE, data = umf1)
 
-mod0.haz <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+mod0.p.haz <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
                       keyfun = "haz", output = "density", unitsOut = "ha",
                       mixture = "P", K = 100, se = TRUE, data = umf1)
 
-mod0.hn <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+mod0.p.hn <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
                      keyfun = "halfnorm", output = "density", unitsOut = "ha",
                      mixture = "P", K = 100, se = TRUE, data = umf1)
 
-#mod0.uni <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
-#                      keyfun = "uniform", output = "density", unitsOut = "ha",
-#                     mixture = "P", K = 100, se = TRUE, data = umf1, starts = coef(mod0.exp))
+mod0.nb.exp <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+                      keyfun = "exp", output = "density", unitsOut = "ha",
+                      mixture = "NB", K = 100, se = TRUE, data = umf1)
+
+mod0.nb.haz <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+                      keyfun = "haz", output = "density", unitsOut = "ha",
+                      mixture = "NB", K = 100, se = TRUE, data = umf1)
+
+mod0.nb.hn <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+                     keyfun = "halfnorm", output = "density", unitsOut = "ha",
+                     mixture = "NB", K = 100, se = TRUE, data = umf1)
 
 ## +++++++++++++++++++++++++++++++
 #         model ranking
 ## +++++++++++++++++++++++++++++++
 
-modlist1 <- list(mod0.exp = mod0.exp, mod0.haz = mod0.haz, mod0.hn = mod0.hn)
+modlist1 <- list(mod0.p.exp = mod0.p.exp, mod0.p.haz = mod0.p.haz, mod0.p.hn = mod0.p.hn,
+                 mod0.nb.exp = mod0.nb.exp, mod0.nb.haz = mod0.nb.haz, mod0.nb.hn = mod0.nb.hn)
 aictab(modlist1)
 
-mod0.exp@estimates[1] # 4.81; this is the shape/rate for an exp model
-plot(0:5, gxexp(0:5, rate = 4.81), frame = F, type = "l", ylim = c(0, 1), xlim = c(0, 5),# Generate the plot
-     xlab = "Distance from Observer (m)", ylab = "Detection Probability", lwd = 3)
+#mod0.nb.exp@estimates[1] # 4.81; this is the shape/rate for an exp model
+#plot(0:5, gxexp(0:5, rate = 4.81), frame = F, type = "l", ylim = c(0, 1), xlim = c(0, 5),# Generate the plot
+#     xlab = "Distance from Observer (m)", ylab = "Detection Probability", lwd = 3)
 
 ## +++++++++++++++++++++++++++++++
 #         model ranking
 ## +++++++++++++++++++++++++++++++
 
-p_null <- mod0.exp
+p_null <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+                    keyfun = "haz", output = "density", unitsOut = "ha",
+                    mixture = "NB", K = 100, se = TRUE, data = umf1)
 
-p_mssr <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~mssr,
-                    keyfun = "exp", output = "density", unitsOut = "ha",
-                    mixture = "P", K = 100, se = TRUE, data = umf1)
+#p_mssr <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~mssr,
+#                    keyfun = "haz", output = "density", unitsOut = "ha",
+#                    mixture = "NB", K = 100, se = TRUE, data = umf1)
 
 p_ord <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~ordinal,
-                   keyfun = "exp", output = "density", unitsOut = "ha",
-                   mixture = "P", K = 100, se = TRUE, data = umf1)
+                   keyfun = "haz", output = "density", unitsOut = "ha",
+                   mixture = "NB", K = 100, se = TRUE, data = umf1)
 
 p_visit <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~visit,
-                     keyfun = "exp", output = "density", unitsOut = "ha",
-                     mixture = "P", K = 100, se = TRUE, data = umf1,
-                     starts = coef(p_ord))
+                     keyfun = "haz", output = "density", unitsOut = "ha",
+                     mixture = "NB", K = 100, se = TRUE, data = umf1)
 
 p_temp <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~temp,
-                    keyfun = "exp", output = "density", unitsOut = "ha",
-                    mixture = "P", K = 100, se = TRUE, data = umf1)
+                    keyfun = "haz", output = "density", unitsOut = "ha",
+                    mixture = "NB", K = 100, se = TRUE, data = umf1)
 
 p_wind <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~wind,
-                    keyfun = "exp", output = "density", unitsOut = "ha",
-                    mixture = "P", K = 100, se = TRUE, data = umf1,
-                    starts = coef(p_ord))
+                    keyfun = "haz", output = "density", unitsOut = "ha",
+                    mixture = "NB", K = 100, se = TRUE, data = umf1)
 
 p_cloud <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~cloud,
-                     keyfun = "exp", output = "density", unitsOut = "ha",
-                     mixture = "P", K = 100, se = TRUE, data = umf1)
+                     keyfun = "haz", output = "density", unitsOut = "ha",
+                     mixture = "NB", K = 100, se = TRUE, data = umf1)
 
 detmodlist <- list(p_null = p_null,
-                   p_mssr = p_mssr,
+                   #p_mssr = p_mssr,
                    p_ord = p_ord, 
                    p_temp = p_temp, 
                    p_cloud = p_cloud, 
@@ -151,37 +158,37 @@ aictab(detmodlist)
 # Building models
 ###############################################################################
 
-lam_null <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~temp,
-                      keyfun = "exp", output = "density", unitsOut = "ha",
-                      mixture = "P", K = 100, se = TRUE, data = umf1)
+lam_null <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~cloud,
+                      keyfun = "haz", output = "density", unitsOut = "ha",
+                      mixture = "NB", K = 100, se = TRUE, data = umf1)
 
-lam_pract <- gdistsamp(lambdaformula = ~practice, phiformula = ~1, pformula = ~temp,
-                       keyfun = "exp", output = "density", unitsOut = "ha",
-                       mixture = "P", K = 100, se = TRUE, data = umf1)
+lam_pract <- gdistsamp(lambdaformula = ~practice, phiformula = ~1, pformula = ~cloud,
+                       keyfun = "haz", output = "density", unitsOut = "ha",
+                       mixture = "NB", K = 100, se = TRUE, data = umf1)
 
-lam_treat <- gdistsamp(lambdaformula = ~treated, phiformula = ~1, pformula = ~temp,
-                       keyfun = "exp", output = "density", unitsOut = "ha",
-                       mixture = "P", K = 100, se = TRUE, data = umf1)
+lam_treat <- gdistsamp(lambdaformula = ~treated, phiformula = ~1, pformula = ~cloud,
+                       keyfun = "haz", output = "density", unitsOut = "ha",
+                       mixture = "NB", K = 100, se = TRUE, data = umf1)
 
-lam_treat_pract <- gdistsamp(lambdaformula = ~treated + practice, phiformula = ~1, pformula = ~temp,
-                             keyfun = "exp", output = "density", unitsOut = "ha",
-                             mixture = "P", K = 100, se = TRUE, data = umf1)
+lam_treat_pract <- gdistsamp(lambdaformula = ~treated + practice, phiformula = ~1, pformula = ~cloud,
+                             keyfun = "haz", output = "density", unitsOut = "ha",
+                             mixture = "NB", K = 100, se = TRUE, data = umf1)
 
-lam_flowers_treat <- gdistsamp(lambdaformula = ~scale(flowers) + treated, phiformula = ~1, pformula = ~temp,
-                               keyfun = "exp", output = "density", unitsOut = "ha",
-                               mixture = "P", K = 100, se = TRUE, data = umf1)
+lam_flowers_treat <- gdistsamp(lambdaformula = ~scale(flowers) + treated, phiformula = ~1, pformula = ~cloud,
+                               keyfun = "haz", output = "density", unitsOut = "ha",
+                               mixture = "NB", K = 100, se = TRUE, data = umf1)
 
-lam_flowers_pract <- gdistsamp(lambdaformula = ~scale(flowers) + practice, phiformula = ~1, pformula = ~temp,
-                               keyfun = "exp", output = "density", unitsOut = "ha",
-                               mixture = "P", K = 100, se = TRUE, data = umf1)
+lam_flowers_pract <- gdistsamp(lambdaformula = ~scale(flowers) + practice, phiformula = ~1, pformula = ~cloud,
+                               keyfun = "haz", output = "density", unitsOut = "ha",
+                               mixture = "NB", K = 100, se = TRUE, data = umf1)
 
-lam_flowers_pract_treat <- gdistsamp(lambdaformula = ~scale(flowers) + practice + treated, phiformula = ~1, pformula = ~temp,
-                                     keyfun = "exp", output = "density", unitsOut = "ha",
-                                     mixture = "P", K = 100, se = TRUE, data = umf1)
+lam_flowers_pract_treat <- gdistsamp(lambdaformula = ~scale(flowers) + practice + treated, phiformula = ~1, pformula = ~cloud,
+                                     keyfun = "haz", output = "density", unitsOut = "ha",
+                                     mixture = "NB", K = 100, se = TRUE, data = umf1)
 
-lam_flowers <- gdistsamp(lambdaformula = ~scale(flowers), phiformula = ~1, pformula = ~temp,
-                         keyfun = "exp", output = "density", unitsOut = "ha",
-                         mixture = "P", K = 100, se = TRUE, data = umf1)
+lam_flowers <- gdistsamp(lambdaformula = ~scale(flowers), phiformula = ~1, pformula = ~cloud,
+                         keyfun = "haz", output = "density", unitsOut = "ha",
+                         mixture = "NB", K = 100, se = TRUE, data = umf1)
 
 lammodlist <- list(lam_null = lam_null, lam_pract = lam_pract,
                    lam_treat = lam_treat, lam_treat_pract = lam_treat_pract,
