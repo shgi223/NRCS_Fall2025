@@ -13,7 +13,7 @@ butts1$flowers[is.na(butts1$flowers)] <- mean(butts1$flowers, na.rm = TRUE)
 
 # prep data for unmarked frame
 ################################################################################
-butt.obs <- as.matrix(butts1[,12:16]) # detection data
+butt.obs <- as.matrix(butts1[,c("dist1", "dist2", "dist3", "dist4", "dist5")]) # detection data
 
 breaks <- c(0,2,4,6,8,10) # this needs to be length = J + 1 (J= no. of distance classes)
 
