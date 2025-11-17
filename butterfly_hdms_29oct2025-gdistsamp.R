@@ -63,31 +63,45 @@ umf1 <- unmarkedFrameGDS(y = butt.obs,
 
 summary(umf1)
 
-mod0.exp <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
-                      keyfun = "exp", output = "density", unitsOut = "ha",
-                      mixture = "P", K = 100, se = TRUE, data = umf1)
+###########
+mod0.p.exp <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+                        keyfun = "exp", output = "density", unitsOut = "ha",
+                        mixture = "P", K = 100, se = TRUE, data = umf1)
 
-mod0.haz <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
-                      keyfun = "haz", output = "density", unitsOut = "ha",
-                      mixture = "P", K = 100, se = TRUE, data = umf1)
+mod0.p.haz <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+                        keyfun = "haz", output = "density", unitsOut = "ha",
+                        mixture = "P", K = 100, se = TRUE, data = umf1)
 
-mod0.hn <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
-                     keyfun = "halfnorm", output = "density", unitsOut = "ha",
-                     mixture = "P", K = 100, se = TRUE, data = umf1)
+mod0.p.hn <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+                       keyfun = "halfnorm", output = "density", unitsOut = "ha",
+                       mixture = "P", K = 100, se = TRUE, data = umf1)
+
+mod0.nb.exp <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+                         keyfun = "exp", output = "density", unitsOut = "ha",
+                         mixture = "NB", K = 100, se = TRUE, data = umf1)
+
+mod0.nb.haz <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+                         keyfun = "haz", output = "density", unitsOut = "ha",
+                         mixture = "NB", K = 100, se = TRUE, data = umf1)
+
+mod0.nb.hn <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
+                        keyfun = "halfnorm", output = "density", unitsOut = "ha",
+                        mixture = "NB", K = 100, se = TRUE, data = umf1)
 
 #mod0.uni <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
 #                      keyfun = "uniform", output = "density", unitsOut = "ha",
 #                      mixture = "P", K = 100, se = TRUE, data = umf1, starts = coef(mod0.hn))
 
+
 ## +++++++++++++++++++++++++++++++
 #         model ranking
 ## +++++++++++++++++++++++++++++++
-
-modlist1 <- list(mod0.exp = mod0.exp, mod0.haz = mod0.haz, mod0.hn = mod0.hn)
+modlist1 <- list(mod0.p.exp = mod0.p.exp, mod0.p.haz = mod0.p.haz, mod0.p.hn = mod0.p.hn,
+                 mod0.nb.exp = mod0.nb.exp,mod0.nb.haz = mod0.nb.haz, mod0.nb.hn = mod0.nb.hn)
 aictab(modlist1)
 
-haz.shape <- exp(coef(mod0.haz, type="det"))
-haz.scale <- exp(coef(mod0.haz, type="scale"))
+haz.shape <- exp(coef(mod0.nb.haz, type="det"))
+haz.scale <- exp(coef(mod0.nb.haz, type="scale"))
 # you need to change the detFun piece of this ("gxhn", "gxhaz" or whatever). Also 
 # need to change the arguments inside it; ?detFuns for more info
 plot(0:5, gxhaz(0:5, shape = haz.shape, scale = haz.scale), frame = F, type = "l", ylim = c(0,1), xlim = c(0,5),
@@ -97,7 +111,7 @@ plot(0:5, gxhaz(0:5, shape = haz.shape, scale = haz.scale), frame = F, type = "l
 #         model ranking
 ## +++++++++++++++++++++++++++++++
 
-p_null <- mod0.haz
+p_null <- mod0.nb.haz
 
 p_mssr <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~mssr,
                     keyfun = "haz", output = "density", unitsOut = "ha",
@@ -126,7 +140,7 @@ p_cloud <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~cloud,
                      mixture = "P", K = 100, se = TRUE, data = umf1)
 
 detmodlist <- list(p_null = p_null,
-                   p_mssr = p_mssr,
+                   #p_mssr = p_mssr,
                    p_ord = p_ord, 
                    p_temp = p_temp, 
                    p_cloud = p_cloud, 
