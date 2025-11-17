@@ -111,13 +111,21 @@ mod0.nb.hn <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
 ## +++++++++++++++++++++++++++++++
 
 modlist1 <- list(mod0.p.exp = mod0.p.exp, mod0.p.haz = mod0.p.haz, mod0.p.hn = mod0.p.hn,
-                 mod0.nb.exp = mod0.nb.exp, mod0.nb.haz = mod0.nb.haz, mod0.nb.hn = mod0.nb.hn)
+                 #mod0.nb.exp = mod0.nb.exp,
+                 mod0.nb.haz = mod0.nb.haz, mod0.nb.hn = mod0.nb.hn)
 aictab(modlist1)
 
+#####code from 2024 data 
 #mod0.nb.exp@estimates[1] # 4.81; this is the shape/rate for an exp model
 #plot(0:5, gxexp(0:5, rate = 4.81), frame = F, type = "l", ylim = c(0, 1), xlim = c(0, 5),# Generate the plot
-#     xlab = "Distance from Observer (m)", ylab = "Detection Probability", lwd = 3)
+    # xlab = "Distance from Observer (m)", ylab = "Detection Probability", lwd = 3)
 
+
+## Skylar tried to apply 2024 to this part...double check the plot function for this ###
+
+#mod0.nb.haz@estimates[1] # 4.87; this is the shape/rate for nb haz model 
+plot(0:5, gxexp(0:5, rate = 4.87), frame = F, type = "l", ylim = c(0, 1), xlim = c(0, 5),# Generate the plot
+          xlab = "Distance from Observer (m)", ylab = "Detection Probability", lwd = 3)
 ## +++++++++++++++++++++++++++++++
 #         model ranking
 ## +++++++++++++++++++++++++++++++
@@ -126,9 +134,9 @@ p_null <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~1,
                     keyfun = "haz", output = "density", unitsOut = "ha",
                     mixture = "NB", K = 100, se = TRUE, data = umf1)
 
-#p_mssr <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~mssr,
-#                    keyfun = "haz", output = "density", unitsOut = "ha",
-#                    mixture = "NB", K = 100, se = TRUE, data = umf1)
+p_mssr <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~mssr,
+                    keyfun = "haz", output = "density", unitsOut = "ha",
+                   mixture = "NB", K = 100, se = TRUE, data = umf1)
 
 p_ord <- gdistsamp(lambdaformula = ~1, phiformula = ~1, pformula = ~ordinal,
                    keyfun = "haz", output = "density", unitsOut = "ha",
@@ -217,12 +225,13 @@ fitstats <- function(fm) {
   return(out)
 }
 
-(pb <- parboot(lam_flowers_pract, fitstats, nsim=25, report=1))
+##Getting errors here###
+(pb <- parboot(lam_flowers_pract_treat, fitstats, nsim=25, report=1))
 (c.hat <- pb@t0[2]/mean(pb@t.star[,2])) # 1.003315 
 
 ##
 
-ModelToPredict <- lam_flowers_pract
+ModelToPredict <- lam_flowers_pract_treat
 newdat1 = data.frame("practice" = unique(bees1$practice),
                      "flowers" = 0)
 pred1 <- predict(ModelToPredict, type = "lambda", newdata = newdat1, append = T)
@@ -272,3 +281,4 @@ arrows(x0 = bp, y0 = pred1$lower, # Lower bounds
        x1 = bp, y1 = pred1$upper, # Upper bounds
        angle = 90, code = 3, length = 0.1)
 abline(h=0)
+
