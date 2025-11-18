@@ -219,7 +219,7 @@ rownames(df1) <- 1:nrow(df1)
 sums <- colSums(df1[,13:17])
 barplot(sums, names.arg = names(df1[,13:17]), xlab = "Distance", ylab = "# Observations", main = "Bee data")
 abline(h=0)
-write.csv(df1, "~/bees2024-25.csv", row.names = F)
+write.csv(df1, "./bees2024-25.csv", row.names = F)
 
 # formatting distances -- Butterflies next
 ################################
@@ -273,6 +273,7 @@ for(i in 1:length(surveys)){
   cloudi <- datai$cloud[1]
   ordinali <- datai$ordinal[1]
   mssri <- datai$mssr[1]
+  yeari <- datai$year[1]
   
   # flowers
   flowers_i <- subset(flowerdens, survey_id == survi)[2]
@@ -281,6 +282,7 @@ for(i in 1:length(surveys)){
   # veg
   sitei <- substr(survi, 1, 10)
   vegi <- subset(veg1, full_point_id == sitei)
+  vegi <- subset(vegi, year == yeari) # subset for proper year
   
   # note - using "buttsi" instead of "datai"
   dist1i = nrow(subset(buttsi, distance > -0.01 & distance < 2)) ## NOTE DISTANCE DIFFS FROM BEES!
@@ -331,5 +333,5 @@ sums <- colSums(df2[,12:16])
 barplot(sums, names.arg = names(df2[,12:16]), xlab = "Distance", ylab = "# Observations", main = "Bufferfly Data")
 abline(h=0)
 
-write.csv(df2, "~/butts2024-25.csv", row.names = F)
+write.csv(df2, "./butts2024-25.csv", row.names = F)
 
