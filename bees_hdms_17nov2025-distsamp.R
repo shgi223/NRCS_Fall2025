@@ -126,30 +126,63 @@ aictab(detmodlist)
 ###############################################################################
 
 lam_null <- distsamp(~scale(wind) ~1, data = umf1, keyfun = 'hazard')
-
-# one lambda variable
 lam_pract <- distsamp(~scale(wind) ~practice, data = umf1, keyfun = 'hazard')
 lam_treat <- distsamp(~scale(wind) ~treated, data = umf1, keyfun = 'hazard')
-lam_flowers <- distsamp(~scale(wind) ~scale(flowers), data = umf1, keyfun = 'hazard')
-
-# two lambda variables
 lam_pract_treat <- distsamp(~scale(wind) ~practice + treated, data = umf1, keyfun = 'hazard')
-lam_treat_flowers <- distsamp(~scale(wind) ~treated + scale(flowers), data = umf1, keyfun = 'hazard')
-lam_pract_flowers <- distsamp(~scale(wind) ~practice + scale(flowers), data = umf1, keyfun = 'hazard')
-
-# three lambda variables
-lam_pract_trt_flowers <- distsamp(~scale(wind) ~practice + treated + scale(flowers), data = umf1, keyfun = 'hazard')
+lam_pract_x_treat <- distsamp(~scale(wind) ~practice * treated, data = umf1, keyfun = 'hazard')
 
 lammodlist <- list(lam_null = lam_null, 
                    lam_pract = lam_pract, 
                    lam_treat = lam_treat, 
-                   lam_flowers = lam_flowers, 
                    lam_pract_treat = lam_pract_treat, 
-                   lam_treat_flowers = lam_treat_flowers, 
-                   lam_pract_flowers = lam_pract_flowers, 
-                   lam_pract_trt_flowers = lam_pract_trt_flowers)
-                   
+                   lam_pract_x_treat = lam_pract_x_treat)
+
 aictab(lammodlist, c.hat= 1.798313)
+
+###############################################################################
+
+ModelToPredict <- lam_pract_x_treat
+practlist <- c(unique(bees2$practice)[1], unique(bees2$practice)[1],
+               unique(bees2$practice)[2],unique(bees2$practice)[2],
+               unique(bees2$practice)[3], unique(bees2$practice)[3],
+               unique(bees2$practice)[4], unique(bees2$practice)[4])
+newdat1 = data.frame("practice" = practlist,
+                     "treated" = c("pre", "post"))
+
+pred1 <- predict(ModelToPredict, type = "state", newdata = newdat1, append = T)
+
+#
+treatment_colors <- rep(c("tomato", "lightgreen", "lightpink", "lightyellow"), each = 2)
+
+bp <- barplot(pred1$Predicted,
+              col = treatment_colors,
+              names.arg = c("pre", "post", "pre", "post", "pre", "post", "pre", "post"),
+              ylim = c(0, max(pred1$upper) + 20), # Adjusting y-axis to include error bars
+              ylab = "Bee Density (95% CI)")
+
+arrows(x0 = bp, y0 = pred1$lower, # Lower bounds
+       x1 = bp, y1 = pred1$upper, # Upper bounds
+       angle = 90, code = 3, length = 0.1)
+abline(h=0)
+
+# Add custom treatment labels beneath the x-axis
+treatment_labels <- c("Presc. fire", "Brush mgmt.", 
+                      "Wild. Hab. Pl.", "Presc. graz.")
+
+# Place treatment labels centered under each treatment group
+midpoints <- tapply(bp, rep(1:4, each = 2), mean)  # Get the midpoint for each pair
+text(x = midpoints, y = -65, labels = treatment_labels, xpd = TRUE)  # Adjust y for spacing
+
+###############################################################################
+
+lam_pract_x_treat <- distsamp(~scale(wind) ~practice * treated, data = umf1, keyfun = 'hazard')
+lam_pract_x_treat_flow <- distsamp(~1 ~scale(flowers) + practice * treated, data = umf1, keyfun = 'hazard')
+
+# does adding flowers help?
+lammodlist2 <- list(lam_pract_x_treat = lam_pract_x_treat, 
+                   lam_pract_x_treat_flow = lam_pract_x_treat_flow)
+                   
+aictab(lammodlist2, c.hat= 1.798313) # no longer improves things
 
 ###############################################################################
 # GOF
@@ -170,7 +203,15 @@ fitstats <- function(fm) {
 (pb <- parboot(lam_pract_trt_flowers, fitstats, nsim=25, report=1))
 (c.hat <- pb@t0[2]/mean(pb@t.star[,2])) # 1.798313
 
-##
+###############################################################################
+#
+#
+#
+#   SCRAP CODE BELOW THIS POINT
+#
+#
+#
+###############################################################################
 
 ModelToPredict <- lam_pract_flowers
 newdat1 = data.frame("practice" = unique(bees2$practice),
