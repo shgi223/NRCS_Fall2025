@@ -200,7 +200,7 @@ fitstats <- function(fm) {
 }
 
 ##Getting errors here###
-(pb <- parboot(lam_pract_trt_flowers, fitstats, nsim=25, report=1))
+(pb <- parboot(lam_pract_x_treat_flow, fitstats, nsim=25, report=1)) #changed to lam_pract_x_treat_flow from lam_pract_trt_flowers
 (c.hat <- pb@t0[2]/mean(pb@t.star[,2])) # 1.798313
 
 ###############################################################################
