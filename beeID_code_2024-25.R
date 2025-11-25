@@ -117,46 +117,50 @@ genera_count <- beeID %>%
   )
 genera_count
 
-
-#make a plot of Genus richness by conservation practice
+#make a plot of total/overall Genus richness by conservation practice
 ggplot(genera_count, aes(x = conservation_practice, y = n_genera)) +
   geom_col() +
   labs(
     y = "Number of Genera",
     x = "Treatment",
-    title = "Unique Genera per Treatment"
+    title = "Unique Genera per Conservation Practice"
   )
-
-###Getting genera count by conservation practice and treatment status
-genera_count_treat_by_pract <- beeID %>%
-  group_by(conservation_practice, treated) %>%
-  summarise(
-    n_genera = n_distinct(Genus),
-    .groups = "drop"
-  )
-genera_count_treat_by_pract
-
-###plotting pre vs post for each treatment
-ggplot(genera_count_treat_by_pract, aes(x = treated, y = n_genera, fill = treated)) +
-  geom_col() +
-  facet_wrap(~ conservation_practice) +
-  labs(
-    x = "Period",
-    y = "Genera Richness",
-    title = "Pre vs Post Treatment Genera Richness"
-  )
-
 
 
 #### Get a count of unique genera by conservation practice and treatment (pre/post) for each sampling occasion
-genera_count_treat_by_pract_survey <- beeID %>%
-  group_by(conservation_practice, treated, survey) %>%
+###Genera count by Replicate
+genera_count_by_rep <- beeID %>%
+  group_by(survey, conservation_practice, treated) %>%
   summarise(
     n_genera = n_distinct(Genus),
     .groups = "drop"
   )
-genera_count_treat_by_pract_survey
+genera_count_by_rep
 
+##Getting confidence intervals
+genera_summary <- genera_count_by_rep %>%
+  group_by(conservation_practice, treated) %>%
+  summarise(
+    mean_genera = mean(n_genera),
+    sd_genera = sd(n_genera),
+    n = n(),
+    se = sd_genera / sqrt(n),
+    ci_lower = mean_genera - 1.96 * se,
+    ci_upper = mean_genera + 1.96 * se,  
+    .groups = "drop"
+  )
+
+#creating a plot with confidence intervals
+ggplot(genera_summary, aes(x = conservation_practice, y = mean_genera, fill = treated)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper),
+                position = position_dodge(width = 0.8), width = 0.2) +
+  labs(
+    title = "Mean Unique Genera Per Relicate by Conservation Practice and Treatment (Pre vs Post)",
+    x = "Management Style",
+    y = "Mean Unique Genera (± 95% CI)"
+  ) +
+  theme_minimal()
 
 
 ######
@@ -170,13 +174,28 @@ preplanting <- subset(beeID, treated == "pre" & conservation_practice == "wildli
 pregrazing <- subset(beeID, treated == "pre" & conservation_practice == "prescribed_grazing")
 
 
-
-
-
-
-
-
 ###############################
+###Getting genera count by conservation practice and treatment status
+genera_count_treat_by_pract <- beeID %>%
+  group_by(conservation_practice, treated) %>%
+  summarise(
+    n_genera = n_distinct(Genus),
+    .groups = "drop"
+  )
+genera_count_treat_by_pract
+
+###plotting pre vs post for each conservation practice
+ggplot(genera_count_treat_by_pract, aes(x = treated, y = n_genera, fill = treated)) +
+  geom_col() +
+  facet_wrap(~ conservation_practice) +
+  labs(
+    x = "Period",
+    y = "Genera Richness",
+    title = "Pre vs Post Treatment Genera Richness"
+  )
+
+
+
 #######################
 
 
