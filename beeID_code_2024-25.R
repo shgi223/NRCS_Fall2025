@@ -1,3 +1,6 @@
+###############
+#Getting files ready 
+
 #beeID <- readxl::read_xlsx("./2024-25_CEAP_MASTER_9.12.2025.xlsx", sheet = "beeID2024-25")
 
 #putting survey ID on pollinator surveys
@@ -14,7 +17,8 @@
 
 
 
-##Cleaning Code ###
+###############
+#Cleaning Code ###
 #beeID <- read.csv("C:/Users/new user/Desktop/NRCS_Fall2025/beeID_2024-25.csv")
 beeID <- readxl::read_xlsx("./2024-25_CEAP_MASTER_9.12.2025.xlsx", sheet = "beeID2024-25")
 write.csv(beeID, "C:/Users/new user/Desktop/NRCS_Fall2025/beeID2024-25.csv", row.names = F)
@@ -45,9 +49,7 @@ beeID <- subset(beeID, treated == "pre" | treated == "post")
 
 nrow(beeID)
 
-
 unique(beeID$survey)
-
 unique(beeID$short_point_id)
 unique(beeID$full_point_id)
 unique(beeID$state)
@@ -80,7 +82,6 @@ bee_count <- beeID %>%
     n_bees = n(), #counts rows
     .groups = "drop"
   )
-bee_count
 
 ###Creating a barplot of total bee Identifications by practice and treatment
 ggplot(bee_count, aes(x = conservation_practice, y = n_bees, fill = treated)) + #fill = Treatment → colors bars for Pre/Post
@@ -151,13 +152,19 @@ ggplot(genera_count, aes(x = conservation_practice, y = n_genera)) +
 
 #### Get a count of unique genera by conservation practice and treatment (pre/post) for each sampling occasion
 ###Genera count by Replicate
-genera_count_by_rep <- beeID %>%
+
+    
+  genera_count_by_rep <- beeID %>%
   group_by(survey, conservation_practice, treated) %>%
   summarise(
     n_genera = n_distinct(Genus),
     .groups = "drop"
   )
-genera_count_by_rep
+
+genera_count_by_rep # This is giving me average for all sampling periods 
+# BUT does not appear to be separated by conservation practice/treatment
+mean(genera_count_by_rep$n_genera)
+
 
 ##Getting confidence intervals
 genera_summary <- genera_count_by_rep %>%
@@ -194,7 +201,6 @@ prefire <- subset(beeID, treated == "pre" & conservation_practice == "prescribed
 preshrub <- subset(beeID, treated == "pre" & conservation_practice == "brush_management")
 preplanting <- subset(beeID, treated == "pre" & conservation_practice == "wildlife_hab_planting")
 pregrazing <- subset(beeID, treated == "pre" & conservation_practice == "prescribed_grazing")
-
 
 ###############################
 ###Getting genera count by conservation practice and treatment status
