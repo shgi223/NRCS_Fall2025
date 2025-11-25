@@ -72,6 +72,28 @@ unique(beeID$det)
 unique(beeID$Preservation)
 
 #########
+#Total number of bees captured per conservation practice and treatment
+
+bee_count <- beeID %>%
+  group_by(conservation_practice, treated) %>%
+  summarise(
+    n_bees = n(), #counts rows
+    .groups = "drop"
+  )
+bee_count
+
+###Creating a barplot of total bee Identifications by practice and treatment
+ggplot(bee_count, aes(x = conservation_practice, y = n_bees, fill = treated)) + #fill = Treatment → colors bars for Pre/Post
+  geom_col(position = position_dodge(width = 0.8), width = 0.7) + #position_dodge → puts Pre and Post bars side by side for each management style
+  labs(
+    title = "Total Bee Identifications by Conservation Practice and Treatment",
+    x = "Conservation Practice",
+    y = "Total Bees"
+  ) +
+  theme_minimal()
+
+
+#######
 #Trying to make a for loop that gets gets us the number of bees identified from each sampling/trap occasion
 
 # for() loop that adds up all the bees for each sampling occasion and
@@ -157,7 +179,7 @@ ggplot(genera_summary, aes(x = conservation_practice, y = mean_genera, fill = tr
                 position = position_dodge(width = 0.8), width = 0.2) +
   labs(
     title = "Mean Unique Genera Per Relicate by Conservation Practice and Treatment (Pre vs Post)",
-    x = "Management Style",
+    x = "Conservation Practice",
     y = "Mean Unique Genera (± 95% CI)"
   ) +
   theme_minimal()
