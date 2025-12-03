@@ -158,7 +158,7 @@ head(unique_genera_per_pract)
 unique_genera_per_pract
 #Goal = to get number of unique Genera per conservation practice
 #note that Subgenera and uncertain Genera (?) are still included and probably need to be removed
-###(does not differentiate Lasioglossum subgenera here)
+###(Differentiates Lasioglossum subgenera here or for example "Epimelissodes" and "Epimelissodes?")
 
 genera_count <- beeID %>%
   group_by(conservation_practice) %>%
