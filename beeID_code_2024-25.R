@@ -66,7 +66,8 @@ unique(beeID$visit)
 unique(beeID$trap.n.a)
 unique(beeID$Insect.Order)
 unique(beeID$Family)
-unique(beeID$Genus)
+unique(beeID$Genus) ##Still has some question marks
+unique(beeID$Subgenera)
 unique(beeID$Specimen.ID)
 unique(beeID$Sex)
 unique(beeID$det)
@@ -113,19 +114,6 @@ ggplot(bee_count, aes(x = conservation_practice, y = n_bees, fill = treated)) + 
 
 beedens <- data.frame("survey" = 0, "NoBees" = 0)
 
-###for () loop Needs Revision below
-for(i in 1:length(unique(beeID$survey))){
-  survey_i <-unique(beeID$survey)[i]
-  survey_i_data <- subset(beeID, survey == survey_i)
-  NoBees_i <-(nrow(survey_i_data))
-  newrow <- data.frame("survey" = survey_i, "NoBees" = NoBees_i)
-  beedens <- rbind (beedens, newrow)
-  unique_genera <- tapply(beeID$Genus, beeID$survey, unique)[i] ### Not sure how to make this work in the way I want
-  print(paste0("survey ", i, " (", newrow$survey, ")", " is done! It had ",
-               (newrow$NoBees), " bees 🐝", "and ", (length(unique_genera)), " Genera"))
-  #Sys.sleep(0.05)
-}
-
 ####new for() loop ####
 beedens <- data.frame("survey" = 0, "NoBees" = 0)
 # for() loop that adds up all the bees for each survey and
@@ -136,6 +124,9 @@ for(i in 1:length(unique(beeID$survey))){
   NoBees_i <- sum(survey_i_data$Prelim.ID)
   newrow <- data.frame("survey" = survey_i, "NoBees" = NoBees_i)
   beedens <- rbind(beedens, newrow)
+  print(paste0("survey ", i, " (", newrow$survey, ")", " is done! It had ",
+               (newrow$NoBees), " bees 🐝", "and ", (length(unique_genera)), " Genera"))  ### Not sure how to make this work in the way I want for Genera
+  #Sys.sleep(0.05)
 }
 
 beedens <- beedens[2:nrow(beedens),]
@@ -157,8 +148,8 @@ unique_genera_per_pract<- tapply(beeID$Genus, beeID$conservation_practice, uniqu
 head(unique_genera_per_pract)
 unique_genera_per_pract
 #Goal = to get number of unique Genera per conservation practice
-#note that Subgenera and uncertain Genera (?) are still included and probably need to be removed
-###(Differentiates Lasioglossum subgenera here or for example "Epimelissodes" and "Epimelissodes?")
+#note that uncertain Genera (?) are still included and probably need to be edited
+###(FOR EXAMPLE:Differentiates "Epimelissodes" and "Epimelissodes?")
 
 genera_count <- beeID %>%
   group_by(conservation_practice) %>%
