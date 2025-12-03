@@ -20,23 +20,24 @@
 ###############
 #Cleaning Code ###
 #beeID <- read.csv("C:/Users/new user/Desktop/NRCS_Fall2025/beeID_2024-25.csv")
-beeID <- readxl::read_xlsx("./2024-25_CEAP_MASTER_12.2.2025.xlsx", sheet = "beeID2024-25")
-write.csv(beeID, "C:/Users/new user/Desktop/NRCS_Fall2025/beeID2024-25.csv", row.names = F)
+beeID <- readxl::read_xlsx("./2024-25_CEAP_MASTER_12.2.2025.xlsx", sheet = "beeID2024-25") #read in bee ID sheet from master excel file
+write.csv(beeID, "C:/Users/new user/Desktop/NRCS_Fall2025/beeID2024-25.csv", row.names = F) #create a csv file with just the beeID sheet.
 
-beeID <- read.csv("C:/Users/new user/Desktop/NRCS_Fall2025/beeID2024-25.csv")
-beeID <- as.data.frame(beeID)
+beeID <- read.csv("C:/Users/new user/Desktop/NRCS_Fall2025/beeID2024-25.csv") #read just the beeID csv sheet in to R
+beeID <- as.data.frame(beeID) #make a data frame
 
 # make visitID column since we will pseudoreplicate point x visit
 #beeID$survey <- paste0(beeID$full_point_id, "_v", beeID$visit, "_y", beeID$year)
 
-nrow(beeID)
-head(beeID)
+nrow(beeID) #number of rows in the beeID sheet before subsetting
+head(beeID) #preview data frame
 
-unique(beeID$Prelim.ID)
-beeID <- subset(beeID, Prelim.ID == "bee" |  Prelim.ID == "none")
-beeID <- subset(beeID, trap.n.a == "N")
+unique(beeID$Prelim.ID) #read in unique values of Prelim ID
+beeID <- subset(beeID, Prelim.ID == "bee" |  Prelim.ID == "none") #subset to only include rows where prelim ID == "bee" or "none"
+beeID <- subset(beeID, trap.n.a == "N") #subset to only include traps that were not messed with (no cows, no rain, etc.)
 unique(beeID$survey)
-nrow(beeID)
+nrow(beeID) #checking our current number of rows
+
 
 library(dplyr);library(ggplot2)
 
@@ -44,12 +45,11 @@ library(dplyr);library(ggplot2)
 #beeID$survey <- paste0(data1$full_point_id, "_v", beeID$visit, "_y", data1$year)
 
 unique(beeID$conservation_practice)
-beeID <- subset(beeID, conservation_practice != "not_enrolled_in_NRCS")
-beeID <- subset(beeID, conservation_practice != "no_longer_point")
-beeID <- subset(beeID, survey != "mo_priv022_v2_y2025") # Remove MO_022_02
-beeID <- subset(beeID, treated == "pre" | treated == "post")
+beeID <- subset(beeID, conservation_practice != "not_enrolled_in_NRCS" & conservation_practice != "no_longer_point") #remove not enrolled and no longer point
+beeID <- subset(beeID, survey != "mo_priv022_v2_y2025") # Remove MO_022_02 (outlier flowers and bee counts AND not actually managed)
+beeID <- subset(beeID, treated == "pre" | treated == "post") #only include points where treated == "pre" or "post" 
 
-nrow(beeID)
+nrow(beeID) #checking our updated number of rows after subsetting
 
 unique(beeID$survey)
 unique(beeID$short_point_id)
@@ -59,14 +59,11 @@ unique(beeID$conservation_practice)
 unique(beeID$treated)
 unique(beeID$trap.type)
 beeID <- subset(beeID, trap.type != "unknown")
-unique(beeID$month) #WHY ARE THERE NAS in the month column?
-#beeID <- subset(beeID, month != "NA")
+unique(beeID$month)
 unique(beeID$day)
 unique(beeID$year)
 unique(beeID$visit)
-
 unique(beeID$trap.n.a)
-unique(beeID$Prelim.ID)
 unique(beeID$Insect.Order)
 unique(beeID$Family)
 unique(beeID$Genus)
@@ -75,17 +72,29 @@ unique(beeID$Sex)
 unique(beeID$det)
 unique(beeID$Preservation)
 
-#########
-#Total number of bees captured per conservation practice and treatment
+####
+unique(beeID$Prelim.ID) 
+beeID$Prelim.ID[beeID$Prelim.ID == "none"] <- 0 #changes "none" to value of zero in the Prelim.ID column
+##could I change "bee" to "1" to make it numeric and easier to count???
+beeID$Prelim.ID[beeID$Prelim.ID == "bee"] <- 1 # change "bee" to "1" 
+beeID$Prelim.ID <- as.numeric(beeID$Prelim.ID) # make numeric
 
+
+#########
+#Total number of bees identified in current subset
+sum(beeID$Prelim.ID) #3,728 bees
+
+
+#Total number of bees captured per conservation practice and treatment
 bee_count <- beeID %>%
   group_by(conservation_practice, treated) %>%
   summarise(
-    n_bees = n(), #counts rows ... is this counting n() rows of "bee" and "none" ??
+    n_bees = sum(Prelim.ID), #sum of 1's and zeros by conservation practice AND treatment
     .groups = "drop"
   )
-bee_count
+bee_count #total bees per practice and treatment
 
+#visualizing the bee_count values
 ###Creating a barplot of total bee Identifications by practice and treatment
 ggplot(bee_count, aes(x = conservation_practice, y = n_bees, fill = treated)) + #fill = Treatment → colors bars for Pre/Post
   geom_col(position = position_dodge(width = 0.8), width = 0.7) + #position_dodge → puts Pre and Post bars side by side for each management style
@@ -96,7 +105,6 @@ ggplot(bee_count, aes(x = conservation_practice, y = n_bees, fill = treated)) + 
   ) +
   theme_minimal()
 
-
 #######
 #Trying to make a for loop that gets gets us the number of bees identified from each sampling/trap occasion
 
@@ -105,7 +113,7 @@ ggplot(bee_count, aes(x = conservation_practice, y = n_bees, fill = treated)) + 
 
 beedens <- data.frame("survey" = 0, "NoBees" = 0)
 
-
+###for () loop Needs Revision below
 for(i in 1:length(unique(beeID$survey))){
   survey_i <-unique(beeID$survey)[i]
   survey_i_data <- subset(beeID, survey == survey_i)
@@ -113,9 +121,21 @@ for(i in 1:length(unique(beeID$survey))){
   newrow <- data.frame("survey" = survey_i, "NoBees" = NoBees_i)
   beedens <- rbind (beedens, newrow)
   unique_genera <- tapply(beeID$Genus, beeID$survey, unique)[i] ### Not sure how to make this work in the way I want
-   print(paste0("survey ", i, " (", newrow$survey, ")", " is done! It had ",
+  print(paste0("survey ", i, " (", newrow$survey, ")", " is done! It had ",
                (newrow$NoBees), " bees 🐝", "and ", (length(unique_genera)), " Genera"))
   #Sys.sleep(0.05)
+}
+
+####new for() loop ####
+beedens <- data.frame("survey" = 0, "NoBees" = 0)
+# for() loop that adds up all the bees for each survey and
+# calculates a single "# bees" (flower dens) for each survey
+for(i in 1:length(unique(beeID$survey))){
+  survey_i <- unique(beeID$survey)[i]
+  survey_i_data <- subset(beeID, survey == survey_i)
+  NoBees_i <- sum(survey_i_data$Prelim.ID)
+  newrow <- data.frame("survey" = survey_i, "NoBees" = NoBees_i)
+  beedens <- rbind(beedens, newrow)
 }
 
 beedens <- beedens[2:nrow(beedens),]
@@ -123,7 +143,10 @@ rownames(beedens) <- 1:nrow(beedens)
 
 head(beedens)
 
-summary(beedens)
+summary(beedens) ##summary of number of bees per survey 
+#mean = 9.2 
+#min = 0 
+#max = 86
 
 #Make a list of unique Genera for each sampling occasion (surveyID)
 unique_genera <- tapply(beeID$Genus, beeID$survey, unique)
@@ -132,8 +155,10 @@ head(unique_genera)
 #Make a list of unique Genera for each conservation practice
 unique_genera_per_pract<- tapply(beeID$Genus, beeID$conservation_practice, unique)
 head(unique_genera_per_pract)
-
-#Get number of unique Genera/Subgenera (does not differentiate Lasioglossum subgenera here)
+unique_genera_per_pract
+#Goal = to get number of unique Genera per conservation practice
+#note that Subgenera and uncertain Genera (?) are still included and probably need to be removed
+###(does not differentiate Lasioglossum subgenera here)
 
 genera_count <- beeID %>%
   group_by(conservation_practice) %>%
