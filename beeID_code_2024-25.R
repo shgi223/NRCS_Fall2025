@@ -104,7 +104,11 @@ ggplot(bee_count, aes(x = conservation_practice, y = n_bees, fill = treated)) + 
     x = "Conservation Practice",
     y = "Total Bees"
   ) +
-  theme_minimal()
+  #theme_minimal()
+theme(axis.line = element_line(size = 1)) # Adjust 'size' as desired
+
+## Do I need confidence intervals here?
+
 
 #######
 #Trying to make a for loop that gets gets us the number of bees identified from each sampling/trap occasion
