@@ -20,7 +20,7 @@
 ###############
 #Cleaning Code ###
 #beeID <- read.csv("C:/Users/new user/Desktop/NRCS_Fall2025/beeID_2024-25.csv")
-beeID <- readxl::read_xlsx("./2024-25_CEAP_MASTER_9.12.2025.xlsx", sheet = "beeID2024-25")
+beeID <- readxl::read_xlsx("./2024-25_CEAP_MASTER_12.2.2025.xlsx", sheet = "beeID2024-25")
 write.csv(beeID, "C:/Users/new user/Desktop/NRCS_Fall2025/beeID2024-25.csv", row.names = F)
 
 beeID <- read.csv("C:/Users/new user/Desktop/NRCS_Fall2025/beeID2024-25.csv")
@@ -33,10 +33,12 @@ nrow(beeID)
 head(beeID)
 
 unique(beeID$Prelim.ID)
-beeID <- subset(beeID, Prelim.ID == "bee")
+beeID <- subset(beeID, Prelim.ID == "bee" |  Prelim.ID == "none")
 beeID <- subset(beeID, trap.n.a == "N")
 unique(beeID$survey)
 nrow(beeID)
+
+library(dplyr);library(ggplot2)
 
 # make visitID column since we will pseudoreplicate point x visit
 #beeID$survey <- paste0(data1$full_point_id, "_v", beeID$visit, "_y", data1$year)
@@ -79,9 +81,10 @@ unique(beeID$Preservation)
 bee_count <- beeID %>%
   group_by(conservation_practice, treated) %>%
   summarise(
-    n_bees = n(), #counts rows
+    n_bees = n(), #counts rows ... is this counting n() rows of "bee" and "none" ??
     .groups = "drop"
   )
+bee_count
 
 ###Creating a barplot of total bee Identifications by practice and treatment
 ggplot(bee_count, aes(x = conservation_practice, y = n_bees, fill = treated)) + #fill = Treatment → colors bars for Pre/Post
@@ -131,7 +134,6 @@ unique_genera_per_pract<- tapply(beeID$Genus, beeID$conservation_practice, uniqu
 head(unique_genera_per_pract)
 
 #Get number of unique Genera/Subgenera (does not differentiate Lasioglossum subgenera here)
-library(dplyr);library(ggplot2)
 
 genera_count <- beeID %>%
   group_by(conservation_practice) %>%
