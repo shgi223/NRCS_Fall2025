@@ -5,7 +5,7 @@
 library(readxl); library(lubridate); library(suncalc)
 
 # read in raw pollinator observation data
-data1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_9.12.2025.xlsx", sheet = "pollinators")
+  data1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_12.3.2025.xlsx", sheet = "pollinators")
 data1 <- as.data.frame(data1)
 data1 <- data1[,1:16] # we don't need the columns beyond 16
 #View(data1)
