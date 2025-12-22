@@ -141,7 +141,7 @@ aictab(lammodlist, c.hat= 1.798313)
 
 ###############################################################################
 
-umf1@siteCovs$flowers2 <- scale(log(flowers + 1)) # bc flowers is super skewed
+umf1@siteCovs$flowers2 <- scale(log(umf1@siteCovs$flowers + 1)) # bc flowers is super skewed
 
 lam_pract_x_treat <- distsamp(~scale(wind) ~practice * treated, data = umf1, keyfun = 'hazard')
 lam_pract_x_treat_flow <- distsamp(~scale(wind) ~scale(log(flowers + 1)) + practice * treated, data = umf1, keyfun = 'hazard')
