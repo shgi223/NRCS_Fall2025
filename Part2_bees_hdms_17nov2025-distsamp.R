@@ -109,6 +109,7 @@ p_temp <- distsamp(~scale(temp) ~1, data = umf1, keyfun = 'hazard')
 p_wind <- distsamp(~scale(wind) ~1, data = umf1, keyfun = 'hazard')
 p_cloud <- distsamp(~scale(cloud) ~1, data = umf1, keyfun = 'hazard')
 
+
 # this is how you provide starting values... may need to come back to this
 #p_cloud2 <- distsamp(~cloud ~1, data = umf1, keyfun = 'hazard', starts=(coef(p_cloud)))
 
@@ -163,7 +164,7 @@ newdat1 = data.frame("practice" = practlist,
                      "treated" = c("pre", "post"))
 
 pred1 <- predict(ModelToPredict, type = "state", newdata = newdat1, append = T)
-
+pred1
 #
 treatment_colors <- rep(c("tomato", "lightgreen", "lightpink", "lightyellow"), each = 2)
 
