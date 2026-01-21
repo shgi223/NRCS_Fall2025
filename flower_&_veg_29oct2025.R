@@ -1,9 +1,9 @@
 library(readxl)
 
 ################################# part 1 - floral data
-df3 <- read.csv("C:/Users/new user/Desktop/UPDATED/Cleaned_CEAP_Flowers_9.25.2025.csv")
+flowers1
 
-postfire <- subset(df2, treated == "post" & practice == "prescribed_burning")
+postfire <- subset(flowers1, treated == "post" & practice == "prescribed_burning")
 postshrub <- subset(df2, treated == "post" & practice == "brush_management")
 postplanting <- subset(df2, treated == "post" & practice == "wildlife_hab_planting")
 postgrazing <- subset(df2, treated == "post" & practice == "prescribed_grazing")

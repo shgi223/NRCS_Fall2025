@@ -44,11 +44,12 @@ data1$mssr <- as.numeric(difftime(survey_posix, sunrise_posix, units = "mins"))
 
 # Flowers
 ################################
-
-flowers1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_9.12.2025.xlsx", sheet = "flowers")
+# read in raw pollinator observation data
+flowers1  <- readxl::read_xlsx("./2024-25_CEAP_MASTER_1.14.2026.xlsx", sheet = "flowers")
 flowers1 <- as.data.frame(flowers1)
 flowers1 <- flowers1[,1:13]
 head(flowers1)
+
 
 # make visitID column since we will pseudoreplicate point x visit
 flowers1$survey_id <- paste0(flowers1$full_point_id, "_v", flowers1$visit, "_y", flowers1$year)
@@ -71,7 +72,7 @@ rownames(flowerdens) <- 1:nrow(flowerdens)
 # Veg
 ################################
 
-veg1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_9.12.2025.xlsx", sheet = "veg")
+veg1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_12.3.2025.xlsx", sheet = "veg")
 veg1 <- as.data.frame(veg1)
 veg1 <- veg1[,c(3,5,6,10,30:44)]
 veg1[,5:19] <- round(veg1[,5:19], 0) # round values
@@ -209,7 +210,7 @@ for(i in 1:length(surveys)){ # for each survey...
   df1 <- rbind(df1, newrow)
   print(paste0("Survey ", i, " (", newrow$survey, ")", " is done! It had ", 
                rowSums(newrow[,13:17]), " bees 🐝 and ", newrow$flowers, " flowers 🌼"))
-  Sys.sleep(0.05)
+  #Sys.sleep(0.05)
 }
 
 df1 <- df1[2:nrow(df1),]
