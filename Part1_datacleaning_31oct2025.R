@@ -5,9 +5,9 @@
 library(readxl); library(lubridate); library(suncalc)
 
 # read in raw pollinator observation data
-  data1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_12.3.2025.xlsx", sheet = "pollinators")
+  data1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_1.20.2026.xlsx", sheet = "pollinators")
 data1 <- as.data.frame(data1)
-data1 <- data1[,1:16] # we don't need the columns beyond 16
+data1 <- data1[,1:21] # we don't need the columns beyond 16
 #View(data1)
 
 # make visitID column since we will pseudoreplicate point x visit
@@ -74,7 +74,7 @@ rownames(flowerdens) <- 1:nrow(flowerdens)
 
 veg1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_1.20.2026.xlsx", sheet = "veg")
 veg1 <- as.data.frame(veg1)
-veg1 <- veg1[,c(3,5,6,10,30:44)]
+veg1 <- veg1[,c(4,6,7,11,31:45)]
 veg1[,5:19] <- round(veg1[,5:19], 0) # round values
 
 # make visitID column since we will pseudoreplicate point x visit
