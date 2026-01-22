@@ -45,9 +45,9 @@ data1$mssr <- as.numeric(difftime(survey_posix, sunrise_posix, units = "mins"))
 # Flowers
 ################################
 # read in raw pollinator observation data
-flowers1  <- readxl::read_xlsx("./2024-25_CEAP_MASTER_1.14.2026.xlsx", sheet = "flowers")
+flowers1  <- readxl::read_xlsx("./2024-25_CEAP_MASTER_1.20.2026.xlsx", sheet = "flowers")
 flowers1 <- as.data.frame(flowers1)
-flowers1 <- flowers1[,1:13]
+flowers1 <- flowers1[,1:16]
 head(flowers1)
 
 
@@ -72,7 +72,7 @@ rownames(flowerdens) <- 1:nrow(flowerdens)
 # Veg
 ################################
 
-veg1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_12.3.2025.xlsx", sheet = "veg")
+veg1 <- readxl::read_xlsx("./2024-25_CEAP_MASTER_1.20.2026.xlsx", sheet = "veg")
 veg1 <- as.data.frame(veg1)
 veg1 <- veg1[,c(3,5,6,10,30:44)]
 veg1[,5:19] <- round(veg1[,5:19], 0) # round values
