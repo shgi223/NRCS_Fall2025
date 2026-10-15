@@ -147,7 +147,7 @@ head(data1)
 head(bees1)
 
 for(i in 1:length(surveys)){ # for each survey...
-  #i = 101
+  #i = 1127
   survi <- surveys[i]
   datai <- subset(data1, survey == survi) # for metadata
   beesi <- subset(bees1, survey == survi) # for bee data
