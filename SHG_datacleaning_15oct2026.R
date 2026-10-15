@@ -52,6 +52,7 @@ flowers1 <- flowers1[,1:16]  # we don't need the columns beyond 16
 head(flowers1)
 
 
+
 # make visitID column since we will pseudoreplicate point x visit
 flowers1$survey_id <- paste0(flowers1$full_point_id, "_v", flowers1$visit, "_y", flowers1$year)
 
@@ -62,7 +63,7 @@ flowerdens <- data.frame("survey_id" = 0, "NoFlowers" = 0)
 for(i in 1:length(unique(flowers1$survey_id))){
   survey_i <- unique(flowers1$survey_id)[i]
   survey_i_data <- subset(flowers1, survey_id == survey_i)
-  NoFlowers_i <- sum(as.numeric(survey_i_data$flowers))
+  NoFlowers_i <- sum(survey_i_data$flowers)
   newrow <- data.frame("survey_id" = survey_i, "NoFlowers" = NoFlowers_i)
   flowerdens <- rbind(flowerdens, newrow)
 }
@@ -108,8 +109,6 @@ smallest_values <- sort(butts1$distance)[1:round(buttsamp90,0)]
 hist(smallest_values, main = "Closest 90% of Butterfly Records", xlab = "Butterfly detection distances (m from transect)")
 # seems like 5 bins, each 2m wide would be appropriate
 
-# formatting distances -- Bees first
-################################
 
 # establishing the list of surveys
 surveys <- unique(data1$survey)
@@ -213,6 +212,7 @@ for(i in 1:length(surveys)){ # for each survey...
                rowSums(newrow[,13:17]), " bees 🐝 and ", newrow$flowers, " flowers 🌼"))
   #Sys.sleep(0.05)
 }
+
 
 df1 <- df1[2:nrow(df1),]
 rownames(df1) <- 1:nrow(df1)
