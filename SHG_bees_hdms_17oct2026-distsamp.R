@@ -188,7 +188,7 @@ treatment_labels <- c("Presc. fire", "Brush mgmt.",
 
 # Place treatment labels centered under each treatment group
 midpoints <- tapply(bp, rep(1:4, each = 2), mean)  # Get the midpoint for each pair
-text(x = midpoints, y = -65, labels = treatment_labels, xpd = TRUE)  # Adjust y for spacing
+text(x = midpoints, y = -50, labels = treatment_labels, xpd = TRUE)  # Adjust y for spacing
 
 ###############################################################################
 
@@ -221,7 +221,7 @@ fitstats <- function(fm) {
 (c.hat <- pb@t0[2]/mean(pb@t.star[,2])) # 1.671369 
 
 
-###
+###Modeling bee response to flower density figure
 ModelToPredict <- lam_pract_x_treat_flow
 newdat1 = data.frame("practice" = "prescribed_burning",
                      "treated" = "post",
