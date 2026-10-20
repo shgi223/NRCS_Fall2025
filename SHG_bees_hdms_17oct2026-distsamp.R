@@ -9,8 +9,9 @@ bees2 <- read.csv("./bees2024-26.csv")
 nrow(bees2)
 head(bees2)
 unique(bees2$practice)
-#bees2 <- subset(bees2, practice != "not_enrolled_in_NRCS")
-bees2 <- subset(bees2, survey != "mo_priv022_v2_y2025") # Remove MO_022_02
+bees2 <- subset(bees2, practice != "not_enrolled_in_NRCS")
+bees2 <- subset(bees2, survey != "mo_priv022_v2_y2025") # Remove MO_022_02_25
+bees2 <- subset(bees2, survey != "mo_priv010_v2_y2024") # Remove MO_010_02_24
 bees2 <- subset(bees2, treated == "pre" | treated == "post")
 nrow(bees2)
 
@@ -140,7 +141,7 @@ lammodlist <- list(lam_null = lam_null,
                    lam_pract_treat = lam_pract_treat, 
                    lam_pract_x_treat = lam_pract_x_treat)
 
-aictab(lammodlist, c.hat= 1.798313)
+aictab(lammodlist, c.hat= 1.671369)
 
 ###############################################################################
 
@@ -153,7 +154,7 @@ lam_pract_x_treat_flow <- distsamp(~scale(wind) ~scale(log(flowers + 1)) + pract
 lammodlist2 <- list(lam_pract_x_treat = lam_pract_x_treat, 
                     lam_pract_x_treat_flow = lam_pract_x_treat_flow)
 
-aictab(lammodlist2, c.hat= 1.798313)
+aictab(lammodlist2, c.hat= 1.671369)
 
 ###############################################################################
 
@@ -191,14 +192,14 @@ text(x = midpoints, y = -65, labels = treatment_labels, xpd = TRUE)  # Adjust y 
 
 ###############################################################################
 
-lam_pract_x_treat <- distsamp(~scale(wind) ~practice * treated, data = umf1, keyfun = 'hazard')
-lam_pract_x_treat_flow <- distsamp(~scale(wind) ~scale(flowers) + practice * treated, data = umf1, keyfun = 'hazard')
+lam_pract_x_treat <- distsamp(~scale(wind) ~practice * treated, data = umf1, keyfun = 'exp')
+lam_pract_x_treat_flow <- distsamp(~scale(wind) ~scale(flowers) + practice * treated, data = umf1, keyfun = 'exp')
 
 # does adding flowers help?
 lammodlist2 <- list(lam_pract_x_treat = lam_pract_x_treat, 
                     lam_pract_x_treat_flow = lam_pract_x_treat_flow)
 
-aictab(lammodlist2, c.hat= 1.798313) # no longer improves things
+aictab(lammodlist2, c.hat= 1.671369) # no longer improves things
 
 ###############################################################################
 # GOF
@@ -217,7 +218,21 @@ fitstats <- function(fm) {
 
 ##Getting errors here###
 (pb <- parboot(lam_pract_x_treat_flow, fitstats, nsim=25, report=1)) #changed to lam_pract_x_treat_flow from lam_pract_trt_flowers
-(c.hat <- pb@t0[2]/mean(pb@t.star[,2])) # 1.798313
+(c.hat <- pb@t0[2]/mean(pb@t.star[,2])) # 1.671369 
+
+
+###
+ModelToPredict <- lam_pract_x_treat_flow
+newdat1 = data.frame("practice" = "prescribed_burning",
+                     "treated" = "post",
+                     "flowers" = seq(from=min((umf1@siteCovs$flowers)),to=max((umf1@siteCovs$flowers)),length.out=100))
+pred1 <- predict(ModelToPredict, type = "state", newdata = newdat1, append = T)
+
+plot(x=newdat1$flowers,y=pred1$Predicted, type = "l", 
+     ylim=c(min(pred1$lower), max(pred1$upper)))
+lines(x=newdat1$flowers, y=pred1$lower, type="l", lty = 2)
+lines(x=newdat1$flowers, y=pred1$upper, type="l", lty = 2)
+
 
 ###############################################################################
 #
@@ -229,12 +244,17 @@ fitstats <- function(fm) {
 #
 ###############################################################################
 
-ModelToPredict <- lam_pract_flowers
-newdat1 = data.frame("practice" = unique(bees2$practice),
-                     "flowers" = 0)
+ModelToPredict <- lam_pract_x_treat_flow
+newdat1 = data.frame("practice" = "prescribed_burning",
+                     "treated" = "post",
+                     "flowers" = seq(from=min((umf1@siteCovs$flowers)),to=max((umf1@siteCovs$flowers)),length.out=100))
 pred1 <- predict(ModelToPredict, type = "state", newdata = newdat1, append = T)
 
-bp <- barplot(pred1$Predicted,
+plot(x=newdat1$flowers,y=pred1$Predicted, type = "l", 
+     ylim=c(min(pred1$lower), max(pred1$upper)))
+lines(x=newdat1$flowers, y=pred1$lower, type="l", lty = 2)
+lines(x=newdat1$flowers, y=pred1$upper, type="l", lty = 2)
+
               names.arg = c("fire", "shrub", "planting", "grazing"),
               ylim = c(0, max(pred1$upper) + 20), # Adjusting y-axis to include error bars
               ylab = "Bee Density (95% CI)")
