@@ -123,11 +123,11 @@ aictab(detmodlist)
 # Building models
 ###############################################################################
 
-lam_null <- distsamp(~scale(wind) ~1, data = umf1, keyfun = 'hazard')
-lam_treat <- distsamp(~scale(wind) ~treated, data = umf1, keyfun = 'hazard')
-lam_pract <- distsamp(~scale(wind) ~practice, data = umf1, keyfun = 'hazard')
-lam_pract_treat <- distsamp(~scale(wind) ~practice + treated, data = umf1, keyfun = 'hazard')
-lam_pract_x_treat <- distsamp(~scale(wind) ~practice * treated, data = umf1, keyfun = 'hazard')
+lam_null <- distsamp(~scale(temp) ~1, data = umf1, keyfun = 'hazard')
+lam_treat <- distsamp(~scale(temp) ~treated, data = umf1, keyfun = 'hazard')
+lam_pract <- distsamp(~scale(temp) ~practice, data = umf1, keyfun = 'hazard')
+lam_pract_treat <- distsamp(~scale(temp) ~practice + treated, data = umf1, keyfun = 'hazard')
+lam_pract_x_treat <- distsamp(~scale(temp) ~practice * treated, data = umf1, keyfun = 'hazard')
 
 lammodlist <- list(lam_null = lam_null, 
                    lam_pract = lam_pract, 
@@ -171,10 +171,45 @@ treatment_labels <- c("Presc. fire", "Brush mgmt.",
 midpoints <- tapply(bp, rep(1:4, each = 2), mean)  # Get the midpoint for each pair
 text(x = midpoints, y = -105, labels = treatment_labels, xpd = TRUE)  # Adjust y for spacing
 
+################################################################################
+#adding flowers in
+ModelToPredict <- lam_pract_x_treat_flow
+practlist <- c(unique(butts2$practice)[1], unique(butts2$practice)[1],
+               unique(butts2$practice)[2],unique(butts2$practice)[2],
+               unique(butts2$practice)[3], unique(butts2$practice)[3],
+               unique(butts2$practice)[4], unique(butts2$practice)[4])
+newdat1 = data.frame("practice" = practlist,
+                     "flowers" = mean(umf1@siteCovs$flowers),
+                     "treated" = c("pre", "post"))
+
+pred1 <- predict(ModelToPredict, type = "state", newdata = newdat1, append = T)
+mean(pred1$Predicted)
+
+#
+treatment_colors <- rep(c("tomato", "lightgreen", "lightpink", "lightyellow"), each = 2)
+
+bp <- barplot(pred1$Predicted,
+              col = treatment_colors,
+              names.arg = c("pre", "post", "pre", "post", "pre", "post", "pre", "post"),
+              ylim = c(0, max(pred1$upper) + 20), # Adjusting y-axis to include error bars
+              ylab = "Butterfly Density (95% CI)")
+
+arrows(x0 = bp, y0 = pred1$lower, # Lower bounds
+       x1 = bp, y1 = pred1$upper, # Upper bounds
+       angle = 90, code = 3, length = 0.1)
+abline(h=0)
+
+# Add custom treatment labels beneath the x-axis
+treatment_labels <- c("Presc. fire", "Brush mgmt.", 
+                      "Wild. Hab. Pl.", "Presc. graz.")
+
+# Place treatment labels centered under each treatment group
+midpoints <- tapply(bp, rep(1:4, each = 2), mean)  # Get the midpoint for each pair
+text(x = midpoints, y = -105, labels = treatment_labels, xpd = TRUE)  # Adjust y for spacing
 ###############################################################################
 
-lam_pract_x_treat <- distsamp(~scale(wind) ~practice * treated, data = umf1, keyfun = 'hazard')
-lam_pract_x_treat_flow <- distsamp(~scale(wind) ~scale(flowers) + practice * treated, data = umf1, keyfun = 'hazard')
+lam_pract_x_treat <- distsamp(~scale(temp) ~practice * treated, data = umf1, keyfun = 'hazard')
+lam_pract_x_treat_flow <- distsamp(~scale(temp) ~scale(flowers) + practice * treated, data = umf1, keyfun = 'hazard')
 
 # does adding flowers help?
 lammodlist2 <- list(lam_pract_x_treat = lam_pract_x_treat, 

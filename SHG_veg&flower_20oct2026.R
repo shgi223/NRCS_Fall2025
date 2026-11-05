@@ -12,6 +12,10 @@ preshrub <- subset(flowers1, treated == "pre" & practice == "brush_management")
 preplanting <- subset(flowers1, treated == "pre" & practice == "wildlife_hab_planting")
 pregrazing <- subset(flowers1, treated == "pre" & practice == "prescribed_grazing")
 
+
+mean(preplanting$flowers)
+mean(postplanting$flowers)
+
 #non-parametric anova on LOG flower density
 flowers1$treatment <- paste0(flowers1$practice, "_", flowers1$treated) # make practice_treatment column 
 flowers.KW <- subset(flowers1, treatment == "prescribed_burning_pre" | treatment == "prescribed_burning_post" |treatment == "brush_management_pre"|
@@ -207,7 +211,7 @@ BigDF <- BigDF[2:nrow(BigDF),]
 BigDF$richness <- as.numeric(BigDF$richness)
 
 kruskal.test(BigDF$richness ~ BigDF$treatment, data = my_data )
-
+mean(BigDF$richness)
 #install.packages("rstatix")
 library(rstatix)
 
@@ -230,7 +234,6 @@ richletter_groupings <- cldList(P.unadj ~ Comparison,
 print(richletter_groupings)
 
 
-
 #Floral species Richness figure
 postfire <- subset(BigDF, treatment == "prescribed_burning_post")
 postshrub <- subset(BigDF, treatment == "brush_management_post")
@@ -240,8 +243,10 @@ prefire <- subset(BigDF, treatment == "prescribed_burning_pre")
 preshrub <- subset(BigDF, treatment ==  "brush_management_pre")
 preplanting <- subset(BigDF, treatment == "wildlife_hab_planting_pre")
 pregrazing <- subset(BigDF, treatment == "prescribed_grazing_pre")
+ #mean(preplanting$richness)
+ #mean(postplanting$richness)
 
-richbp <-boxplot(prefire$richness, postfire$richness, 
+richbpreplantingrichbp <-boxplot(prefire$richness, postfire$richness, 
         preshrub$richness, postshrub$richness,
         preplanting$richness, postplanting$richness,
         pregrazing$richness, postgrazing$richness,
@@ -384,7 +389,8 @@ text(x = 6.625, y = 100, labels = "Woody Stems")
 
 
 
-
+####
+subset(flowers1$practice, )
 
 
 

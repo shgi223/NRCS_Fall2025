@@ -5,7 +5,7 @@
 library(readxl); library(lubridate); library(suncalc)
 
 # read in raw pollinator observation data
-data1 <- readxl::read_xlsx("./2024-26_CEAP_MASTER_10.14.2026.xlsx", sheet = "pollinators")
+data1 <- readxl::read_xlsx("./2024-26_CEAP_MASTER_11.5.2026.xlsx", sheet = "pollinators")
 data1 <- as.data.frame(data1)
 data1 <- data1[,1:21] # we don't need the columns beyond 21
 #View(data1)
@@ -46,7 +46,7 @@ data1$mssr <- as.numeric(difftime(survey_posix, sunrise_posix, units = "mins"))
 # Flowers
 ################################
 # read in raw pollinator observation data
-flowers1  <- readxl::read_xlsx("./2024-26_CEAP_MASTER_10.14.2026.xlsx", sheet = "flowers")
+flowers1  <- readxl::read_xlsx("./2024-26_CEAP_MASTER_11.5.2026.xlsx", sheet = "flowers")
 flowers1 <- as.data.frame(flowers1)
 flowers1 <- flowers1[,1:16]  # we don't need the columns beyond 16
 head(flowers1)
@@ -57,6 +57,7 @@ head(flowers1)
 flowers1$survey_id <- paste0(flowers1$full_point_id, "_v", flowers1$visit, "_y", flowers1$year)
 
 flowerdens <- data.frame("survey_id" = 0, "NoFlowers" = 0)
+
 
 # for() loop that adds up all the flowers of each type for each survey and
 # calculates a single "# flowers" (flower dens) for each survey
@@ -70,11 +71,19 @@ for(i in 1:length(unique(flowers1$survey_id))){
 
 flowerdens <- flowerdens[2:nrow(flowerdens),]
 rownames(flowerdens) <- 1:nrow(flowerdens)
+#####
+#maing a list of unique species and Genera
+#print(list(unique(flowers1$genus)))
+#flowspp <- as.data.frame(list(unique(flowers1$species)))
 
-# Veg
+#write.csv(flowspp, "./flowspp2024-26.csv", row.names = F)#saving as a CSV to load in excel
+
+
+
+
 ################################
-
-veg1 <- readxl::read_xlsx("./2024-26_CEAP_MASTER_10.14.2026.xlsx", sheet = "veg")
+# Veg
+veg1 <- readxl::read_xlsx("./2024-26_CEAP_MASTER_11.5.2026.xlsx", sheet = "veg")
 veg1 <- as.data.frame(veg1)
 veg1 <- veg1[,c(4,6,7,11,31:45)]
 veg1[,5:19] <- round(veg1[,5:19], 0) # round values
