@@ -217,6 +217,23 @@ lammodlist2 <- list(lam_pract_x_treat = lam_pract_x_treat,
 
 aictab(lammodlist2, c.hat= 1.922013)
 
+##############################
+#Detection Probability Figure as a function of distance
+?detFuns # tells us that for gxhaz, we need (x, shape, scale) arguments. x = distances
+
+backTransform(mod0.haz, type= "det")#estimate = 1.19 =shape
+exp(coef(mod0.haz, type = "scale")) #p(scale) = 1.40 = scale
+gxhaz(0:15, shape = 1.19, scale = 1.40)
+#now, create the plot
+plot(0:15, gxhaz(0:15, shape =1.19, scale = 1.40),
+     frame =F, type ="l", ylim=c(0,1),xlim=c(0,15),
+     xlab="Distance (m)", ylab="Butterfly Detection Probability", lwd=3)
+
+#### Detection Probability as a fxn of top ranked covariate (temp) ==> based on AIC
+backTransform(p_temp, type= "det")
+p_temp@estimates[1]#estimate = 5.34 = rate
+
+
 ###############################################################################
 # GOF
 ###############################################################################

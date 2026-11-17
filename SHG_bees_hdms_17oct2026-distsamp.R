@@ -270,6 +270,25 @@ plot(x=newdat1$flowers,y=pred1$Predicted, type = "l",
 lines(x=newdat1$flowers, y=pred1$lower, type="l", lty = 2)
 lines(x=newdat1$flowers, y=pred1$upper, type="l", lty = 2)
 
+###########
+#modeling for detection probability as a fxn of distance ==> using exp detection function
+mod0.exp@estimates[1] #estimate = 4.79 = rate
+gxexp(0:7, rate = 4.79)#(0:7) is used here because 0-7m distances for bees
+plot(0:7, gxexp(0:7, rate = 4.79), frame = F, type ="l", ylim =c(0,1), xlim=c(0,7),
+     xlab="Distance (m)", ylab ="Bee Detection Probability", lwd = 3)
+
+?detFuns #tells us that for gxexp, we only need (x,y)= (distances, rate)
+
+###detection prob ~ top ranked covariate (wind)
+#top ranked covariate based on AIC = wind
+
+p_wind@estimates[1]#estimate = 5.25 = rate
+gxexp(0:5, rate = 5.25)
+
+#now, create the figure
+plot(0:5, gxexp(0:5, rate =5.25),
+     frame=F, type ="l", ylim =c(0,1), xlim=c(0,5),
+     xlab="Wind (Beaufort Index)", ylab="Bee Detection Probability",lwd=3)
 
 ###############################################################################
 #
