@@ -216,6 +216,26 @@ lammodlist2 <- list(lam_pract_x_treat = lam_pract_x_treat,
                     lam_pract_x_treat_flow = lam_pract_x_treat_flow)
 
 aictab(lammodlist2, c.hat= 1.922013)
+####
+##NEW SHG
+lam_flowers <- distsamp(~scale(temp)~flowers, data = umf1, keyfun="hazard")
+lam_pract_flow <- distsamp(~scale(temp) ~practice + flowers, data = umf1, keyfun = 'hazard')
+lam_treat_flow <- distsamp(~scale(temp) ~treated + flowers, data = umf1, keyfun ="hazard")
+lam_pract_treat_flow <- distsamp(~scale(temp) ~practice + treated + flowers, data = umf1, keyfun ="hazard")
+
+lammodlist3 <- list(lam_null = lam_null, 
+                    lam_pract = lam_pract, 
+                    lam_treat = lam_treat,
+                    lam_flowers = lam_flowers,
+                    lam_treat_flow = lam_treat_flow,
+                    lam_pract_flow = lam_pract_flow,
+                    lam_pract_treat = lam_pract_treat, 
+                    lam_pract_treat_flow = lam_pract_treat_flow,
+                    lam_pract_x_treat = lam_pract_x_treat, 
+                    lam_pract_x_treat_flow = lam_pract_x_treat_flow)
+aictab(lammodlist3, c.hat= 1.922013)
+
+
 
 ##############################
 #Detection Probability Figure as a function of distance
@@ -230,8 +250,14 @@ plot(0:15, gxhaz(0:15, shape =1.19, scale = 1.40),
      xlab="Distance (m)", ylab="Butterfly Detection Probability", lwd=3)
 
 #### Detection Probability as a fxn of top ranked covariate (temp) ==> based on AIC
-backTransform(p_temp, type= "det")
-p_temp@estimates[1]#estimate = 5.34 = rate
+#backTransform(p_temp, type= "det")
+p_temp@estimates[1]#estimate = 5.34 = shape
+exp(coef(p_temp, type = "scale"))#p(scale)=1.21 =scale
+gxhaz(0:15, shape = 5.34, scale = 1.21)
+
+plot(0:15, gxhaz(0:15, shape =5.34, scale = 1.21),
+     frame =F, type ="l", ylim=c(0,1),xlim=c(0,15),
+     xlab="Temperature (F)", ylab="Butterfly Detection Probability", lwd=3)
 
 
 ###############################################################################

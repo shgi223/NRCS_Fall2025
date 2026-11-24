@@ -308,15 +308,15 @@ veg_fire <- boxplot(prefire_veg$perc_bare, postfire_veg$perc_bare, # bare ground
         col = c("burlywood4","burlywood4", 
                 "chartreuse3", "chartreuse3",
                 "slateblue3", "slateblue3",
-                "red2","red2"),
+                "orange","orange"),
         boxwex = 0.5,
         outline=FALSE, ylab = "Percent Cover", 
         ylim = c(0,110), main = "Prescribed Fire")
 
-text(x = 1.375, y = 100, labels = "Bare Ground")
-text(x = 3.125, y = 100, labels = "Grass")
-text(x = 4.875, y = 100, labels = "Forbs")
-text(x = 6.625, y = 100, labels = "Woody Stems")
+text(x = 1.375, y = 110, labels = "Bare Ground")
+text(x = 3.125, y = 110, labels = "Grass")
+text(x = 4.875, y = 110, labels = "Forbs")
+text(x = 6.625, y = 110, labels = "Woody Stems")
 
 # brush management
 veg_brush <-boxplot(preshrub_veg$perc_bare, postshrub_veg$perc_bare, # bare ground
@@ -330,15 +330,15 @@ veg_brush <-boxplot(preshrub_veg$perc_bare, postshrub_veg$perc_bare, # bare grou
         col = c("burlywood4","burlywood4", 
                 "chartreuse3", "chartreuse3",
                 "slateblue3", "slateblue3",
-                "red2","red2"),
+                "orange","orange"),
         boxwex = 0.5,
         outline=FALSE, ylab = "Percent Cover", 
         ylim = c(0,110), main = "Shrub Management")
 
-text(x = 1.375, y = 100, labels = "Bare Ground")
-text(x = 3.125, y = 100, labels = "Grass")
-text(x = 4.875, y = 100, labels = "Forbs")
-text(x = 6.625, y = 100, labels = "Woody Stems")
+text(x = 1.375, y = 110, labels = "Bare Ground")
+text(x = 3.125, y = 110, labels = "Grass")
+text(x = 4.875, y = 110, labels = "Forbs")
+text(x = 6.625, y = 110, labels = "Woody Stems")
 
 # prescribed grazing
 veg_grazing <-boxplot(pregrazing_veg$perc_bare, postgrazing_veg$perc_bare, # bare ground
@@ -352,15 +352,15 @@ veg_grazing <-boxplot(pregrazing_veg$perc_bare, postgrazing_veg$perc_bare, # bar
         col = c("burlywood4","burlywood4", 
                 "chartreuse3", "chartreuse3",
                 "slateblue3", "slateblue3",
-                "red2","red2"),
+                "orange","orange"),
         boxwex = 0.5,
         outline=FALSE, ylab = "Percent Cover", 
         ylim = c(0,110), main = "Prescribed Grazing")
 
-text(x = 1.375, y = 100, labels = "Bare Ground")
-text(x = 3.125, y = 100, labels = "Grass")
-text(x = 4.875, y = 100, labels = "Forbs")
-text(x = 6.625, y = 100, labels = "Woody Stems")
+text(x = 1.375, y = 110, labels = "Bare Ground")
+text(x = 3.125, y = 110, labels = "Grass")
+text(x = 4.875, y = 110, labels = "Forbs")
+text(x = 6.625, y = 110, labels = "Woody Stems")
 
 # wildlife habitat planting
 veg_WHP <-boxplot(preplanting_veg$perc_bare, postplanting_veg$perc_bare, # bare ground
@@ -374,15 +374,15 @@ veg_WHP <-boxplot(preplanting_veg$perc_bare, postplanting_veg$perc_bare, # bare 
         col = c("burlywood4","burlywood4", 
                 "chartreuse3", "chartreuse3",
                 "slateblue3", "slateblue3",
-                "red2","red2"),
+                "orange","orange"),
         boxwex = 0.5,
         outline=FALSE, ylab = "Percent Cover", 
         ylim = c(0,110), main = "Wildlife Habitat Planting")
 
-text(x = 1.375, y = 100, labels = "Bare Ground")
-text(x = 3.125, y = 100, labels = "Grass")
-text(x = 4.875, y = 100, labels = "Forbs")
-text(x = 6.625, y = 100, labels = "Woody Stems")
+text(x = 1.375, y = 110, labels = "Bare Ground")
+text(x = 3.125, y = 110, labels = "Grass")
+text(x = 4.875, y = 110, labels = "Forbs")
+text(x = 6.625, y = 110, labels = "Woody Stems")
 
 
 

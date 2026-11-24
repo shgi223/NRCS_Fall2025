@@ -134,7 +134,7 @@ lam_pract <- distsamp(~scale(wind) ~practice, data = umf1, keyfun = 'exp')
 lam_treat <- distsamp(~scale(wind) ~treated, data = umf1, keyfun = 'exp')
 lam_pract_treat <- distsamp(~scale(wind) ~practice + treated, data = umf1, keyfun = 'exp')
 lam_pract_x_treat <- distsamp(~scale(wind) ~practice * treated, data = umf1, keyfun = 'exp')
-
+###
 lammodlist <- list(lam_null = lam_null, 
                    lam_pract = lam_pract, 
                    lam_treat = lam_treat, 
@@ -153,7 +153,26 @@ lam_pract_x_treat_flow <- distsamp(~scale(wind) ~scale(log(flowers + 1)) + pract
 # does adding flowers help?
 lammodlist2 <- list(lam_pract_x_treat = lam_pract_x_treat, 
                     lam_pract_x_treat_flow = lam_pract_x_treat_flow)
+###
+##NEW SHG
+lam_flowers <- distsamp(~scale(wind)~flowers, data = umf1, keyfun="exp")
+lam_pract_flow <- distsamp(~scale(wind) ~practice + flowers, data = umf1, keyfun = 'exp')
+lam_treat_flow <- distsamp(~scale(wind) ~treated + flowers, data = umf1, keyfun ="exp")
+lam_pract_treat_flow <- distsamp(~scale(wind) ~practice + treated + flowers, data = umf1, keyfun ="exp")
 
+lammodlist3 <- list(lam_null = lam_null, 
+                   lam_pract = lam_pract, 
+                   lam_treat = lam_treat,
+                   lam_flowers = lam_flowers,
+                   lam_treat_flow = lam_treat_flow,
+                   lam_pract_flow = lam_pract_flow,
+                   lam_pract_treat_flow = lam_pract_treat_flow,
+                   lam_pract_treat = lam_pract_treat, 
+                   lam_pract_x_treat = lam_pract_x_treat, 
+                   lam_pract_x_treat_flow = lam_pract_x_treat_flow)
+aictab(lammodlist3, c.hat= 1.671369)
+
+###
 aictab(lammodlist2, c.hat= 1.671369)
 ModelToPredict <- lam_pract_x_treat_flow 
 practlist <- c(unique(bees2$practice)[1], unique(bees2$practice)[1],
@@ -277,7 +296,7 @@ gxexp(0:7, rate = 4.79)#(0:7) is used here because 0-7m distances for bees
 plot(0:7, gxexp(0:7, rate = 4.79), frame = F, type ="l", ylim =c(0,1), xlim=c(0,7),
      xlab="Distance (m)", ylab ="Bee Detection Probability", lwd = 3)
 
-?detFuns #tells us that for gxexp, we only need (x,y)= (distances, rate)
+#?detFuns #tells us that for gxexp, we only need (x,y)= (distances, rate)
 
 ###detection prob ~ top ranked covariate (wind)
 #top ranked covariate based on AIC = wind
